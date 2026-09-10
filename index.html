@@ -218,6 +218,12 @@
         .btn-iss { border-color: rgba(0, 229, 255, 0.45); }
         .btn-iss:active { border-color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0, 229, 255, 0.35); }
 
+        .btn-sn34 { border-color: rgba(0, 229, 255, 0.55); }
+        .btn-sn34:active { border-color: var(--neon-cyan); box-shadow: 0 0 14px rgba(0, 229, 255, 0.45); }
+
+        .btn-apod { border-color: rgba(192, 132, 252, 0.55); }
+        .btn-apod:active { border-color: var(--neon-purple); box-shadow: 0 0 14px rgba(192, 132, 252, 0.45); }
+
         .btn-foto { border-color: rgba(255, 179, 0, 0.45); }
         .btn-foto:active { border-color: var(--neon-amber); box-shadow: 0 0 12px rgba(255, 179, 0, 0.35); }
 
@@ -252,6 +258,35 @@
             backdrop-filter: blur(10px);
         }
 
+        /* Przełącznik trybu czasu ogłoszenia */
+        .ann-mode-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .switch-btn {
+            background: rgba(6, 11, 22, 0.7);
+            border: 1px solid var(--hud-border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            padding: 6px;
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .switch-btn.active {
+            background: rgba(0, 229, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+        }
+
         .input-group {
             display: flex;
             flex-direction: column;
@@ -283,6 +318,10 @@
         .input-text:focus {
             border-color: var(--neon-cyan);
             box-shadow: 0 0 8px rgba(0, 229, 255, 0.25);
+        }
+
+        input[type="datetime-local"].input-text {
+            color-scheme: dark;
         }
 
         textarea.input-text {
@@ -471,7 +510,7 @@
                 gap: 24px;
             }
 
-            /* Górny pasek trybów na PC: 4 kwadratowe kafelki obok siebie + zasilanie */
+            /* Górny pasek trybów na PC: 6 kafelków obok siebie + zasilanie */
             .quick-modes-section {
                 display: flex;
                 flex-direction: column;
@@ -479,20 +518,20 @@
             }
 
             .quick-modes-grid {
-                grid-template-columns: repeat(4, 150px) 1fr;
-                gap: 16px;
+                grid-template-columns: repeat(6, 140px) 1fr;
+                gap: 14px;
                 align-items: center;
             }
 
             .quick-modes-grid .btn {
                 aspect-ratio: 1 / 1;
                 height: 120px;
-                padding: 12px;
-                font-size: 0.85rem;
+                padding: 10px;
+                font-size: 0.82rem;
             }
 
             .quick-modes-grid .btn .icon {
-                font-size: 2.5rem;
+                font-size: 2.3rem;
             }
 
             /* Wyłącznik na PC jako estetyczny przycisk obok trybów */
@@ -596,6 +635,14 @@
                     <span class="icon">🛰️</span>
                     <span style="color: var(--neon-cyan);">TRYB ISS</span>
                 </button>
+                <button class="btn btn-sn34" onclick="sendCmd('!tryb sn34', '☄️ WŁĄCZONO SN34')">
+                    <span class="icon">☄️</span>
+                    <span style="color: var(--neon-cyan);">TRYB SN34</span>
+                </button>
+                <button class="btn btn-apod" onclick="sendCmd('!ciekawostka', '🔭 WYŚWIETLONO APOD')">
+                    <span class="icon">🔭</span>
+                    <span style="color: var(--neon-purple);">APOD (60s)</span>
+                </button>
                 <button class="btn btn-foto" onclick="sendCmd('!tryb foto', '🌌 WŁĄCZONO FOTO')">
                     <span class="icon">🌌</span>
                     <span style="color: var(--neon-amber);">TRYB FOTO</span>
@@ -624,10 +671,22 @@
             <div style="display: flex; flex-direction: column;">
                 <div class="section-title">Komunikat na Ekranie</div>
                 <div class="card-form" style="border-color: rgba(0, 229, 255, 0.35);">
-                    <div class="input-group">
+                    
+                    <div class="ann-mode-switch">
+                        <button type="button" class="switch-btn active" id="btn-mode-duration" onclick="setAnnTimeMode('duration')">CZAS TRWANIA</button>
+                        <button type="button" class="switch-btn" id="btn-mode-target" onclick="setAnnTimeMode('target')">DO GODZINY / DNIA</button>
+                    </div>
+
+                    <div class="input-group" id="group-ann-duration">
                         <label>CZAS TRWANIA (MINUTY)</label>
                         <input type="number" id="ann-time" value="2" min="0.5" step="0.5" class="input-text">
                     </div>
+
+                    <div class="input-group" id="group-ann-target" style="display: none;">
+                        <label>AKTYWNE DOKŁADNIE DO:</label>
+                        <input type="datetime-local" id="ann-datetime" class="input-text">
+                    </div>
+
                     <div class="input-group" style="flex: 1;">
                         <label>TREŚĆ KOMUNIKATU</label>
                         <textarea id="ann-text" placeholder="Wprowadź treść ogłoszenia widoczną na ekranie..." class="input-text" style="height: 100%;"></textarea>
@@ -679,37 +738,49 @@
             
             <div class="help-section">
                 <strong>🛰️ Tryb ISS</strong>
-                <span>Uruchamia na ekranie kiosku transmisję wideo na żywo ze stacji kosmicznej ISS oraz panel odliczania przelotów[span_3](start_span)[span_3](end_span).</span>
+                <span>Uruchamia na ekranie kiosku transmisję wideo na żywo ze stacji kosmicznej ISS oraz panel odliczania przelotów.</span>
+            </div>
+
+            <div class="help-section">
+                <strong>☄️ Tryb SN34</strong>
+                <span>Uruchamia transmisję na żywo nieba ze Stacji Bolidowej SN34 wraz z telemetrią parametrów monitoringu[cite: 4].</span>
+            </div>
+
+            <div class="help-section">
+                <strong>🔭 NASA APOD (60s)</strong>
+                <span>Wywołuje na 60 sekund pełnoekranową planszę z astronomicznym zdjęciem dnia NASA i polskim tłumaczeniem opisu naukowego[cite: 4].</span>
             </div>
 
             <div class="help-section">
                 <strong>🌌 Tryb Foto / Wygaszacz</strong>
-                <span>Przełącza system w tryb głównego pokazowego wygaszacza ekranu ze zdjęciami astrofotograficznymi i ciepłym oświetleniem taśmy LED[span_4](start_span)[span_4](end_span).</span>
+                <span>Przełącza system w tryb głównego pokazowego wygaszacza ekranu ze zdjęciami astrofotograficznymi i ciepłym oświetleniem taśmy LED.</span>
             </div>
 
             <div class="help-section">
                 <strong>📢 Komunikat (Ogłoszenia)</strong>
-                <span>Wpisz treść, wybierz czas trwania w minutach i opcjonalnie załącz grafikę (plakat). Komunikat natychmiast wyskoczy na ekranie kiosku[span_5](start_span)[span_5](end_span). Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem[span_6](start_span)[span_6](end_span).</span>
+                <span>Wpisz treść, wybierz czas trwania w minutach lub wskaż dokładną datę i godzinę wygaśnięcia banera. Opcjonalnie załącz grafikę (plakat). Komunikat natychmiast wyskoczy na ekranie kiosku. Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
             </div>
 
             <div class="help-section">
                 <strong>🖼️ Pokaz Zdjęć (Galeria)</strong>
-                <span>Wprowadź tytuł wydarzenia, zaznacz jedno lub wiele zdjęć i kliknij „Nowa galeria”, aby uruchomić pokaz[span_7](start_span)[span_7](end_span). Przycisk „+ Dopisz foto” pozwala dynamicznie dołożyć kolejne zdjęcia do trwającego pokazu[span_8](start_span)[span_8](end_span).</span>
+                <span>Wprowadź tytuł wydarzenia, zaznacz jedno lub wiele zdjęć i kliknij „Nowa galeria”, aby uruchomić pokaz. Przycisk „+ Dopisz foto” pozwala dynamicznie dołożyć kolejne zdjęcia do trwającego pokazu.</span>
             </div>
 
             <div class="help-section">
                 <strong>🔌 Wyłączenie Komputera</strong>
-                <span>Bezpiecznie wygasza diody LED, zamyka aplikację i wyłącza system operacyjny Astrołtarza[span_9](start_span)[span_9](end_span).</span>
+                <span>Bezpiecznie wygasza diody LED, zamyka aplikację i wyłącza system operacyjny Astrołtarza.</span>
             </div>
 
             <div class="help-section">
                 <strong>⚙️ Słownik komend bota (Discord):</strong>
-                <div>• <span class="cmd-code">!tryb iss</span> – włącza widok ISS[span_10](start_span)[span_10](end_span)</div>
-                <div>• <span class="cmd-code">!tryb foto</span> – włącza wygaszacz foto[span_11](start_span)[span_11](end_span)</div>
-                <div>• <span class="cmd-code">!rekwizyt meteoryt</span> – podświetla meteoryt[span_12](start_span)[span_12](end_span)</div>
-                <div>• <span class="cmd-code">!ogloszenie [czas] [tekst]</span> – wyświetla komunikat[span_13](start_span)[span_13](end_span)</div>
-                <div>• <span class="cmd-code">!galeriastop</span> – resetuje galerie i powraca do stanu bazowego[span_14](start_span)[span_14](end_span)</div>
-                <div>• <span class="cmd-code">!wylacz</span> – zamyka system operacyjny komputera[span_15](start_span)[span_15](end_span)</div>
+                <div>• <span class="cmd-code">!tryb iss</span> – włącza widok ISS</div>
+                <div>• <span class="cmd-code">!tryb sn34</span> – włącza widok stacji bolidowej SN34[cite: 4]</div>
+                <div>• <span class="cmd-code">!ciekawostka</span> – wyświetla planszę NASA APOD na 60s[cite: 4]</div>
+                <div>• <span class="cmd-code">!tryb foto</span> – włącza wygaszacz foto</div>
+                <div>• <span class="cmd-code">!rekwizyt meteoryt</span> – podświetla meteoryt</div>
+                <div>• <span class="cmd-code">!ogloszenie [czas|data] [tekst]</span> – wyświetla komunikat</div>
+                <div>• <span class="cmd-code">!galeriastop</span> – resetuje galerie i powraca do stanu bazowego</div>
+                <div>• <span class="cmd-code">!wylacz</span> – zamyka system operacyjny komputera</div>
             </div>
             
             <button class="action-btn btn-announce" onclick="toggleHelp(false)" style="margin-top: 5px;">ZAMKNIJ POMOC</button>
@@ -724,9 +795,45 @@
 
         let DECRYPTED_WEBHOOK = null;
         let statusTimer;
+        let currentAnnTimeMode = 'duration';
 
         function toggleHelp(show) {
             document.getElementById('help-modal').style.display = show ? 'flex' : 'none';
+        }
+
+        function setAnnTimeMode(mode) {
+            currentAnnTimeMode = mode;
+            const btnDuration = document.getElementById('btn-mode-duration');
+            const btnTarget = document.getElementById('btn-mode-target');
+            const grpDuration = document.getElementById('group-ann-duration');
+            const grpTarget = document.getElementById('group-ann-target');
+
+            if (mode === 'duration') {
+                btnDuration.classList.add('active');
+                btnTarget.classList.remove('active');
+                grpDuration.style.display = 'flex';
+                grpTarget.style.display = 'none';
+            } else {
+                btnTarget.classList.add('active');
+                btnDuration.classList.remove('active');
+                grpDuration.style.display = 'none';
+                grpTarget.style.display = 'flex';
+
+                const dtInput = document.getElementById('ann-datetime');
+                if (!dtInput.value) {
+                    const now = new Date();
+                    // Ustawiamy równą kolejną godzinę z zerowymi minutami i sekundami:
+                    now.setHours(now.getHours() + 1, 0, 0, 0);
+                    
+                    const year = now.getFullYear();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    
+                    dtInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                }
+            }
         }
 
         async function decryptPayload(password, base64Bundle) {
@@ -816,9 +923,20 @@
 
         function sendAnnouncement() {
             if (!DECRYPTED_WEBHOOK) return;
-            const time = document.getElementById('ann-time').value || 1;
             const text = document.getElementById('ann-text').value.trim();
             const fileInput = document.getElementById('ann-file');
+
+            let timeParam = "1";
+            if (currentAnnTimeMode === 'duration') {
+                timeParam = document.getElementById('ann-time').value || "1";
+            } else {
+                const targetDt = document.getElementById('ann-datetime').value;
+                if (!targetDt) {
+                    showStatus("⚠️ WYBIERZ DATĘ I GODZINĘ");
+                    return;
+                }
+                timeParam = targetDt; // ciąg w formacie YYYY-MM-DDTHH:MM
+            }
 
             if (!text && fileInput.files.length === 0) {
                 showStatus("⚠️ BRAK TREŚCI OGŁOSZENIA");
@@ -829,7 +947,7 @@
             showStatus("WYSYŁANIE OGŁOSZENIA...");
 
             const formData = new FormData();
-            formData.append("content", `!ogloszenie ${time} ${text}`);
+            formData.append("content", `!ogloszenie "${timeParam}" ${text}`);
             if (fileInput.files.length > 0) formData.append("file", fileInput.files[0]);
 
             fetch(DECRYPTED_WEBHOOK, {
