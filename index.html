@@ -737,7 +737,7 @@
                 </button>
                 <button class="btn btn-apod" onclick="sendCmd('!ciekawostka', '🔭 WYŚWIETLONO APOD')">
                     <span class="icon">🔭</span>
-                    <span style="color: var(--neon-purple);">APOD (60s)</span>
+                    <span style="color: var(--neon-purple);">NASA APOD</span>
                 </button>
                 <button class="btn btn-foto" onclick="sendCmd('!tryb foto', '🌌 WŁĄCZONO FOTO')">
                     <span class="icon">🌌</span>
@@ -878,12 +878,17 @@
 
             <div class="help-section">
                 <strong>☄️ Tryb SN34</strong>
-                <span>Uruchamia transmisję na żywo nieba ze Stacji Bolidowej SN34 wraz z telemetrią parametrów monitoringu[cite: 4].</span>
+                <span>Uruchamia transmisję na żywo nieba ze Stacji Bolidowej SN34 wraz z telemetrią monitoringu.</span>
             </div>
 
             <div class="help-section">
-                <strong>🔭 NASA APOD (60s)</strong>
-                <span>Wywołuje na 60 sekund pełnoekranową planszę z astronomicznym zdjęciem dnia NASA i polskim tłumaczeniem opisu naukowego[cite: 4].</span>
+                <strong>🔭 NASA APOD</strong>
+                <span>Wyświetla pełnoekranową planszę z astronomicznym zdjęciem dnia NASA i polskim tłumaczeniem opisu. Czas wyświetlania zmienisz w ustawieniach APOD.</span>
+            </div>
+
+            <div class="help-section">
+                <strong>🌙 Tryb Niebo</strong>
+                <span>Pokazuje aktualne informacje o niebie, w tym dane astronomiczne i warunki obserwacji.</span>
             </div>
 
             <div class="help-section">
@@ -893,29 +898,40 @@
 
             <div class="help-section">
                 <strong>📢 Komunikat (Ogłoszenia)</strong>
-                <span>Wpisz treść, wybierz czas trwania w minutach lub wskaż dokładną datę i godzinę wygaśnięcia banera. Opcjonalnie załącz grafikę (plakat). Komunikat natychmiast wyskoczy na ekranie kiosku. Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
+                <span>Wpisz treść, wybierz czas trwania w minutach albo podaj godzinę lub datę wygaśnięcia banera. Opcjonalnie załącz grafikę. Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
             </div>
 
             <div class="help-section">
                 <strong>🖼️ Pokaz Zdjęć (Galeria)</strong>
-                <span>Wprowadź tytuł wydarzenia, zaznacz jedno lub wiele zdjęć i kliknij „Nowa galeria”, aby uruchomić pokaz. Przycisk „+ Dopisz foto” pozwala dynamicznie dołożyć kolejne zdjęcia do trwającego pokazu.</span>
+                <span>Wprowadź tytuł wydarzenia, zaznacz jedno lub wiele zdjęć i kliknij „Nowa galeria”. Pokaz działa do godziny 14:00 następnego terminu. „+ Dopisz foto” dodaje zdjęcia do aktywnej galerii, a „Zamknij galerię / reset” kończy pokaz.</span>
+            </div>
+
+            <div class="help-section">
+                <strong>⚙️ Ustawienia</strong>
+                <span>Możesz zmienić czas zdjęcia, skalę animacji Ken Burns, liczbę zdjęć przed panelem ISS, interwał i czas APOD oraz włączenie animacji i intro.</span>
             </div>
 
             <div class="help-section">
                 <strong>🔌 Wyłączenie Komputera</strong>
-                <span>Bezpiecznie wygasza diody LED, zamyka aplikację i wyłącza system operacyjny Astrołtarza.</span>
+                <span>Uruchamia systemowe zamykanie komputera. Komenda wymaga poprawnie skonfigurowanego uprawnienia sudo dla użytkownika aplikacji.</span>
             </div>
 
             <div class="help-section">
                 <strong>⚙️ Słownik komend bota (Discord):</strong>
                 <div>• <span class="cmd-code">!tryb iss</span> – włącza widok ISS</div>
-                <div>• <span class="cmd-code">!tryb sn34</span> – włącza widok stacji bolidowej SN34[cite: 4]</div>
-                <div>• <span class="cmd-code">!ciekawostka</span> – wyświetla planszę NASA APOD na 60s[cite: 4]</div>
-                <div>• <span class="cmd-code">!tryb foto</span> – włącza wygaszacz foto</div>
-                <div>• <span class="cmd-code">!rekwizyt meteoryt</span> – podświetla meteoryt</div>
-                <div>• <span class="cmd-code">!ogloszenie [czas|data] [tekst]</span> – wyświetla komunikat</div>
-                <div>• <span class="cmd-code">!galeriastop</span> – resetuje galerie i powraca do stanu bazowego</div>
-                <div>• <span class="cmd-code">!wylacz</span> – zamyka system operacyjny komputera</div>
+                <div>• <span class="cmd-code">!tryb sn34</span> – włącza widok stacji bolidowej SN34</div>
+                <div>• <span class="cmd-code">!tryb niebo</span> – włącza informacje o aktualnym niebie</div>
+                <div>• <span class="cmd-code">!tryb foto</span> – włącza tryb zdjęć</div>
+                <div>• <span class="cmd-code">!ciekawostka</span> – wyświetla planszę NASA APOD</div>
+                <div>• <span class="cmd-code">!stopapod</span> – zamyka nakładkę APOD</div>
+                <div>• <span class="cmd-code">!rekwizyt &lt;nazwa|numer&gt;</span> – podświetla wskazany rekwizyt</div>
+                <div>• <span class="cmd-code">!ogloszenie &lt;minuty|GG:MM|data&gt; [tekst]</span> – wyświetla komunikat, opcjonalnie z grafiką</div>
+                <div>• <span class="cmd-code">!usunogloszenie</span> – usuwa aktywne ogłoszenie</div>
+                <div>• <span class="cmd-code">!galeria &lt;tytuł&gt;</span> – uruchamia galerię z załączonymi zdjęciami</div>
+                <div>• <span class="cmd-code">!dodajgaleria</span> – dopisuje załączone zdjęcia do aktywnej galerii</div>
+                <div>• <span class="cmd-code">!galeriastop</span> – kończy galerię i wraca do trybu standardowego</div>
+                <div>• <span class="cmd-code">!ustawienia klucz=wartość</span> – zmienia ustawienia systemu</div>
+                <div>• <span class="cmd-code">!wylacz</span> – uruchamia zamykanie systemu operacyjnego</div>
             </div>
             
             <button class="action-btn btn-announce" onclick="toggleHelp(false)" style="margin-top: 5px;">ZAMKNIJ POMOC</button>
