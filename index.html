@@ -765,29 +765,13 @@
                 <button class="modal-close" onclick="toggleSettings(false)" aria-label="Zamknij ustawienia">×</button>
                 <div id="settings-modal-title" class="section-title">Ustawienia Systemu</div>
                 <div class="input-group">
-                    <label for="setting-photo-time">CZAS ZDJĘCIA (SEKUNDY)</label>
-                    <input type="number" id="setting-photo-time" value="30" min="5" max="3600" step="1" class="input-text">
-                </div>
-                <div class="input-group">
                     <label for="setting-kb-scale">SKALA KEN BURNS (PROCENTY)</label>
                     <input type="number" id="setting-kb-scale" value="3" min="0" max="20" step="1" class="input-text">
                 </div>
                 <div class="input-group">
-                    <label for="setting-iss-count">ZDJĘCIA PRZED ISS</label>
-                    <input type="number" id="setting-iss-count" value="4" min="1" max="100" step="1" class="input-text">
+                    <label for="setting-mode-duration">CZAS WYŚWIETLANIA TRYBU (SEKUNDY)</label>
+                    <input type="number" id="setting-mode-duration" value="60" min="5" max="3600" step="1" class="input-text">
                 </div>
-                <div class="input-group">
-                    <label for="setting-apod-interval">APOD CO (SEKUNDY)</label>
-                    <input type="number" id="setting-apod-interval" value="300" min="60" max="86400" step="1" class="input-text">
-                </div>
-                <div class="input-group">
-                    <label for="setting-apod-duration">APOD PRZEZ (SEKUNDY)</label>
-                    <input type="number" id="setting-apod-duration" value="60" min="5" max="3600" step="1" class="input-text">
-                </div>
-                <label class="checkbox-container">
-                    <input type="checkbox" id="setting-kb-enabled" checked>
-                    <span>WŁĄCZ ANIMACJĘ KEN BURNS</span>
-                </label>
                 <label class="checkbox-container">
                     <input type="checkbox" id="setting-intro-enabled">
                     <span>WŁĄCZ INTRO PRZY NASTĘPNYM URUCHOMIENIU</span>
@@ -883,7 +867,7 @@
 
             <div class="help-section">
                 <strong>🔭 NASA APOD</strong>
-                <span>Wyświetla pełnoekranową planszę z astronomicznym zdjęciem dnia NASA i polskim tłumaczeniem opisu. Czas wyświetlania zmienisz w ustawieniach APOD.</span>
+                <span>Wyświetla pełnoekranową planszę z astronomicznym zdjęciem dnia NASA i polskim tłumaczeniem opisu. W automatycznej sekwencji APOD trwa 60 sekund.</span>
             </div>
 
             <div class="help-section">
@@ -908,7 +892,7 @@
 
             <div class="help-section">
                 <strong>⚙️ Ustawienia</strong>
-                <span>Możesz zmienić czas zdjęcia, skalę animacji Ken Burns, liczbę zdjęć przed panelem ISS, interwał i czas APOD oraz włączenie animacji i intro.</span>
+                <span>Możesz zmienić skalę animacji Ken Burns, wspólny czas wyświetlania każdego trybu automatycznej sekwencji oraz włączenie intro.</span>
             </div>
 
             <div class="help-section">
@@ -1067,12 +1051,8 @@
 
         const changedSettings = new Set();
         const settingFields = {
-            'setting-photo-time': 'photo_time',
             'setting-kb-scale': 'ken_burns_scale',
-            'setting-iss-count': 'photos_before_iss',
-            'setting-kb-enabled': 'ken_burns_enabled',
-            'setting-apod-interval': 'apod_interval',
-            'setting-apod-duration': 'apod_duration',
+            'setting-mode-duration': 'mode_duration',
             'setting-intro-enabled': 'intro_enabled'
         };
 
@@ -1091,12 +1071,8 @@
 
         function sendSettings() {
             const values = {
-                photo_time: document.getElementById('setting-photo-time').value,
                 ken_burns_scale: document.getElementById('setting-kb-scale').value,
-                photos_before_iss: document.getElementById('setting-iss-count').value,
-                ken_burns_enabled: document.getElementById('setting-kb-enabled').checked ? 'on' : 'off',
-                apod_interval: document.getElementById('setting-apod-interval').value,
-                apod_duration: document.getElementById('setting-apod-duration').value,
+                mode_duration: document.getElementById('setting-mode-duration').value,
                 intro_enabled: document.getElementById('setting-intro-enabled').checked ? 'on' : 'off'
             };
             const changed = [...changedSettings];
