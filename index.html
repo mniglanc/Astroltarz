@@ -244,6 +244,50 @@
             background: var(--hud-surface-active);
         }
 
+        .meteorite-picker {
+            position: relative;
+            min-width: 0;
+        }
+
+        .meteorite-picker > .btn {
+            width: 100%;
+        }
+
+        .meteorite-options {
+            display: none;
+            position: absolute;
+            z-index: 20;
+            left: 0;
+            right: 0;
+            top: calc(100% + 8px);
+            padding: 8px;
+            gap: 6px;
+            grid-template-columns: 1fr;
+            background: #07101c;
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 18px rgba(0, 229, 255, 0.25);
+        }
+
+        .meteorite-options.visible {
+            display: grid;
+        }
+
+        .meteorite-option {
+            width: 100%;
+            padding: 9px 6px;
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            background: rgba(0, 229, 255, 0.08);
+            color: #fff;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .meteorite-option:active {
+            background: var(--neon-cyan);
+            color: #060913;
+        }
+
         .btn-iss { border-color: rgba(0, 229, 255, 0.45); }
         .btn-iss:active { border-color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0, 229, 255, 0.35); }
 
@@ -743,10 +787,23 @@
                     <span class="icon">🌌</span>
                     <span style="color: var(--neon-amber);">TRYB FOTO</span>
                 </button>
-                <button class="btn" onclick="sendCmd('!rekwizyt meteoryt', '🪨 METEORYT')">
+                <button class="btn" onclick="sendCmd('!tryb meteoryty', '🪨 WŁĄCZONO METEORYTY')">
                     <span class="icon">🪨</span>
                     <span>METEORYT</span>
                 </button>
+                <div class="meteorite-picker">
+                    <button class="btn" onclick="toggleMeteoritePicker()">
+                        <span class="icon">🔎</span>
+                        <span>WYBIERZ METEORYT</span>
+                    </button>
+                    <div id="meteorite-options" class="meteorite-options">
+                        <button class="meteorite-option" onclick="selectMeteorite(1)">METEORYT 1</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(2)">METEORYT 2</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(3)">METEORYT 3</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(4)">METEORYT 4</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(5)">METEORYT 5</button>
+                    </div>
+                </div>
                 <button class="btn" onclick="sendCmd('!rekwizyt 999', '💡 ŚWIATŁA OFF')">
                     <span class="icon">💡</span>
                     <span>ŚWIATŁA OFF</span>
@@ -1047,6 +1104,17 @@
                 if (res.ok) showStatus(label);
                 else showStatus("⚠️ BŁĄD DISCORDA");
             }).catch(() => showStatus("❌ BRAK POŁĄCZENIA"));
+        }
+
+        function toggleMeteoritePicker() {
+            const options = document.getElementById('meteorite-options');
+            if (options) options.classList.toggle('visible');
+        }
+
+        function selectMeteorite(identifier) {
+            const options = document.getElementById('meteorite-options');
+            if (options) options.classList.remove('visible');
+            sendCmd(`!meteoryt ${identifier}`, `🪨 WYBRANO METEORYT ${identifier}`);
         }
 
         const changedSettings = new Set();
