@@ -215,6 +215,15 @@
             gap: 12px;
             width: 100%;
         }
+        .quick-modes-grid > .btn > span:last-child,
+        .quick-modes-grid > .meteorite-picker > .btn > span:last-child {
+            position: relative;
+            top: 1.5rem;
+        }
+        
+        .light-icon {
+            transition: filter 0.2s ease, opacity 0.2s ease;
+        }
 
         .btn {
             background: var(--hud-surface);
@@ -288,6 +297,14 @@
             color: #060913;
         }
 
+        .meteorite-option:disabled {
+            cursor: not-allowed;
+            color: var(--text-muted);
+            border-color: rgba(129, 151, 176, 0.2);
+            background: rgba(129, 151, 176, 0.05);
+            opacity: 0.7;
+        }
+
         .btn-iss { border-color: rgba(0, 229, 255, 0.45); }
         .btn-iss:active { border-color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0, 229, 255, 0.35); }
 
@@ -314,9 +331,27 @@
         }
 
         .icon {
-            font-size: 2.8rem;
+            font-size: 5.6rem;
             line-height: 1;
             filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+        }
+
+        .icon.light-icon-off {
+            filter: grayscale(1) brightness(0.45);
+            opacity: 0.72;
+        }
+
+        .icon.light-icon-on {
+            filter: drop-shadow(0 0 9px rgba(255, 204, 102, 0.9));
+        }
+
+        .sky-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.15rem;
+            font-size: 3.8rem;
+            white-space: nowrap;
         }
 
         /* --- 6. TERMINAL & FORMULARZE --- */
@@ -666,7 +701,11 @@
             }
 
             .quick-modes-grid .btn .icon {
-                font-size: 2.3rem;
+                font-size: 4.6rem;
+            }
+
+            .quick-modes-grid .btn .sky-icon {
+                font-size: 3.2rem;
             }
 
             /* Wyłącznik na PC jako estetyczny przycisk obok trybów */
@@ -754,12 +793,12 @@
         <div class="top-bar">
             <div class="title-block">
                 <h1>ASTROŁTARZ</h1>
-                <div class="sub-badge">KONTROLA SYSTEMU v1.1</div>
+                <div class="sub-badge">KONTROLA SYSTEMU v1.2</div>
             </div>
             <div class="top-buttons">
                 <button class="top-btn settings-link" onclick="toggleSettings(true)">USTAWIENIA</button>
                 <button class="top-btn help-link" onclick="toggleHelp(true)">POMOC</button>
-                <button class="top-btn logout-link" onclick="logout()">ROZŁĄCZ</button>
+                <button class="top-btn logout-link" onclick="logout()">WYLOGUJ</button>
             </div>
         </div>
 
@@ -772,11 +811,11 @@
                     <span style="color: var(--neon-cyan);">TRYB ISS</span>
                 </button>
                 <button class="btn btn-sn34" onclick="sendCmd('!tryb sn34', '☄️ WŁĄCZONO SN34')">
-                    <span class="icon">☄️</span>
+                    <span class="icon">📡</span>
                     <span style="color: var(--neon-cyan);">TRYB SN34</span>
                 </button>
                 <button class="btn btn-sky" onclick="sendCmd('!tryb niebo', '🌙 WŁĄCZONO TRYB NIEBO')">
-                    <span class="icon">🌙</span>
+                    <span class="icon sky-icon"><span>🌙</span><span>☀️</span></span>
                     <span style="color: var(--neon-cyan);">TRYB NIEBO</span>
                 </button>
                 <button class="btn btn-apod" onclick="sendCmd('!ciekawostka', '🔭 WYŚWIETLONO APOD')">
@@ -784,12 +823,12 @@
                     <span style="color: var(--neon-purple);">NASA APOD</span>
                 </button>
                 <button class="btn btn-foto" onclick="sendCmd('!tryb foto', '🌌 WŁĄCZONO FOTO')">
-                    <span class="icon">🌌</span>
+                    <span class="icon">📷</span>
                     <span style="color: var(--neon-amber);">TRYB FOTO</span>
                 </button>
                 <button class="btn" onclick="sendCmd('!tryb meteoryty', '🪨 WŁĄCZONO METEORYTY')">
                     <span class="icon">🪨</span>
-                    <span>METEORYT</span>
+                    <span>SEKWENCJA METEORYTÓW</span>
                 </button>
                 <div class="meteorite-picker">
                     <button class="btn" onclick="toggleMeteoritePicker()">
@@ -797,16 +836,20 @@
                         <span>WYBIERZ METEORYT</span>
                     </button>
                     <div id="meteorite-options" class="meteorite-options">
-                        <button class="meteorite-option" onclick="selectMeteorite(0)">METEORYT 1</button>
-                        <button class="meteorite-option" onclick="selectMeteorite(1)">METEORYT 2</button>
+                        <button class="meteorite-option" disabled>METEORYT 1 - W PRZYGOTOWANIU</button>
+                        <button class="meteorite-option" disabled>METEORYT 2 - W PRZYGOTOWANIU</button>
                         <button class="meteorite-option" onclick="selectMeteorite(2)">METEORYT ZADZIM</button>
-                        <button class="meteorite-option" onclick="selectMeteorite(4)">METEORYT 4</button>
-                        <button class="meteorite-option" onclick="selectMeteorite(5)">METEORYT 5</button>
+                        <button class="meteorite-option" disabled>METEORYT 4 - W PRZYGOTOWANIU</button>
+                        <button class="meteorite-option" disabled>METEORYT 5 - W PRZYGOTOWANIU</button>
                     </div>
                 </div>
-                <button class="btn" onclick="sendCmd('!rekwizyt 999', '💡 ŚWIATŁA OFF')">
-                    <span class="icon">💡</span>
+                <button class="btn" onclick="sendCmd('!swiatla off', '💡 ŚWIATŁA OFF')">
+                    <span class="icon light-icon light-icon-off">💡</span>
                     <span>ŚWIATŁA OFF</span>
+                </button>
+                <button class="btn" onclick="sendCmd('!swiatla on', '💡 ŚWIATŁA ON')">
+                    <span class="icon light-icon light-icon-on">💡</span>
+                    <span>ŚWIATŁA ON</span>
                 </button>
                 
                 <div class="power-box-pc">
