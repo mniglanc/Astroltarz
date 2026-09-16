@@ -797,9 +797,9 @@
                         <span>WYBIERZ METEORYT</span>
                     </button>
                     <div id="meteorite-options" class="meteorite-options">
-                        <button class="meteorite-option" onclick="selectMeteorite(1)">METEORYT 1</button>
-                        <button class="meteorite-option" onclick="selectMeteorite(2)">METEORYT 2</button>
-                        <button class="meteorite-option" onclick="selectMeteorite(3)">METEORYT 3</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(0)">METEORYT 1</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(1)">METEORYT 2</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(2)">METEORYT ZADZIM</button>
                         <button class="meteorite-option" onclick="selectMeteorite(4)">METEORYT 4</button>
                         <button class="meteorite-option" onclick="selectMeteorite(5)">METEORYT 5</button>
                     </div>
@@ -832,6 +832,10 @@
                 <label class="checkbox-container">
                     <input type="checkbox" id="setting-intro-enabled">
                     <span>WŁĄCZ INTRO PRZY NASTĘPNYM URUCHOMIENIU</span>
+                </label>
+                <label class="checkbox-container">
+                    <input type="checkbox" id="setting-meteorites-enabled" checked>
+                    <span>WŁĄCZ PANEL METEORYT</span>
                 </label>
                 <div class="settings-modal-actions">
                     <button class="action-btn" onclick="sendSettings()">ZAPISZ ZMIANY</button>
@@ -1121,7 +1125,8 @@
         const settingFields = {
             'setting-kb-scale': 'ken_burns_scale',
             'setting-mode-duration': 'mode_duration',
-            'setting-intro-enabled': 'intro_enabled'
+            'setting-intro-enabled': 'intro_enabled',
+            'setting-meteorites-enabled': 'meteorites_enabled'
         };
 
         function toggleSettings(visible) {
@@ -1141,7 +1146,8 @@
             const values = {
                 ken_burns_scale: document.getElementById('setting-kb-scale').value,
                 mode_duration: document.getElementById('setting-mode-duration').value,
-                intro_enabled: document.getElementById('setting-intro-enabled').checked ? 'on' : 'off'
+                intro_enabled: document.getElementById('setting-intro-enabled').checked ? 'on' : 'off',
+                meteorites_enabled: document.getElementById('setting-meteorites-enabled').checked ? 'on' : 'off'
             };
             const changed = [...changedSettings];
             if (!changed.length) {
