@@ -215,11 +215,6 @@
             gap: 12px;
             width: 100%;
         }
-        .quick-modes-grid > .btn > span:last-child,
-        .quick-modes-grid > .meteorite-picker > .btn > span:last-child {
-            position: relative;
-            top: 1.5rem;
-        }
         
         .light-icon {
             transition: filter 0.2s ease, opacity 0.2s ease;
@@ -836,7 +831,7 @@
                         <span>WYBIERZ METEORYT</span>
                     </button>
                     <div id="meteorite-options" class="meteorite-options">
-                        <button class="meteorite-option" disabled>METEORYT 1 - W PRZYGOTOWANIU</button>
+                        <button class="meteorite-option" onclick="selectMeteorite(1)">METEORYT 1 - NWA x</button>
                         <button class="meteorite-option" disabled>METEORYT 2 - W PRZYGOTOWANIU</button>
                         <button class="meteorite-option" onclick="selectMeteorite(2)">METEORYT ZADZIM</button>
                         <button class="meteorite-option" disabled>METEORYT 4 - W PRZYGOTOWANIU</button>
