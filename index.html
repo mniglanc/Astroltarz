@@ -418,6 +418,148 @@
         .modal-cancel { background: rgba(148, 163, 184, 0.16); }
 
         @media (max-width: 600px) {
+            body {
+                align-items: stretch;
+                justify-content: flex-start;
+                min-height: 100svh;
+                padding: 12px;
+                overflow-x: hidden;
+            }
+
+            .container {
+                max-width: none;
+                gap: 20px;
+            }
+
+            .top-bar {
+                align-items: flex-start;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .title-block {
+                min-width: 0;
+                flex: 1 1 130px;
+            }
+
+            .title-block h1 {
+                font-size: clamp(1.05rem, 5vw, 1.35rem);
+                white-space: nowrap;
+            }
+
+            .sub-badge {
+                font-size: clamp(0.58rem, 2.5vw, 0.72rem);
+                letter-spacing: 0.8px;
+            }
+
+            .top-buttons {
+                flex: 1 1 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .top-btn {
+                flex: 1 1 0;
+                min-width: 0;
+                padding: 8px 6px;
+                font-size: 0.66rem;
+                letter-spacing: 0.45px;
+            }
+
+            .quick-modes-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .quick-modes-grid .btn {
+                min-height: 100px;
+                aspect-ratio: auto;
+                padding: 10px 6px;
+                font-size: 0.76rem;
+                letter-spacing: 0.35px;
+                gap: 6px;
+            }
+
+            .quick-modes-grid .btn .icon {
+                font-size: clamp(2.35rem, 12vw, 4rem);
+            }
+
+            .quick-modes-grid .btn .sky-icon {
+                font-size: clamp(2rem, 9vw, 3rem);
+            }
+
+            .meteorite-picker,
+            .power-box-pc {
+                min-width: 0;
+            }
+
+            .power-box-pc {
+                grid-column: 1 / -1;
+                height: auto;
+                padding: 0;
+                border: 0;
+                background: transparent;
+            }
+
+            .power-box-pc .btn-danger {
+                min-height: 52px;
+                height: auto;
+            }
+
+            .card-form {
+                padding: 14px;
+                gap: 10px;
+            }
+
+            .input-text {
+                min-width: 0;
+                padding: 11px;
+                font-size: 0.9rem;
+            }
+
+            .file-box {
+                min-height: 58px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 12px 10px;
+                line-height: 1.25;
+            }
+
+            .workspace-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .settings-form {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+
+            .settings-modal-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .overlay-modal,
+            #help-modal {
+                padding: 10px;
+            }
+
+            .modal-card,
+            .modal-content {
+                max-height: 92svh;
+            }
+
+            #status {
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                width: auto;
+                text-align: center;
+                padding: 10px 12px;
+            }
+
             .settings-form {
                 grid-template-columns: 1fr;
             }
