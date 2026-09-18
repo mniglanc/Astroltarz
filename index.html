@@ -846,6 +846,10 @@
                     <span class="icon light-icon light-icon-on">💡</span>
                     <span>ŚWIATŁA ON</span>
                 </button>
+                <button class="btn" onclick="reloadAstroltarz()">
+                    <span class="icon">🔄</span>
+                    <span>PRZEŁADUJ KOD</span>
+                </button>
                 
                 <div class="power-box-pc">
                     <button class="btn btn-danger btn-full" onclick="shutdownSystem()">
@@ -1202,6 +1206,13 @@
             if (!DECRYPTED_WEBHOOK) return;
             if (confirm("⚠️ CZY NA PEWNO CHCESZ WYŁĄCZYĆ KOMPUTER ASTROŁTARZA?\n\nSpowoduje to zamknięcie aplikacji i wyłączenie zasilania.")) {
                 sendCmd('!wylacz', '🔌 WYŁĄCZANIE SYSTEMU...');
+            }
+        }
+
+        function reloadAstroltarz() {
+            if (!DECRYPTED_WEBHOOK) return;
+            if (confirm("PRZEŁADOWAĆ KOD INTERFEJSU ASTROŁTARZA?\n\nAplikacja i Arduino pozostaną uruchomione.")) {
+                sendCmd('!przeladuj', '🔄 PRZEŁADOWYWANIE KODU...');
             }
         }
 
