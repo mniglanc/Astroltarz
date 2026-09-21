@@ -1051,6 +1051,10 @@
                     <input type="url" id="astronautyka-url" class="input-text" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
                 </div>
                 <div class="input-group">
+                    <label for="astronautyka-name">NAZWA TRANSMISJI</label>
+                    <input type="text" id="astronautyka-name" class="input-text" maxlength="160" placeholder="np. START ARTEMIS II" autocomplete="off">
+                </div>
+                <div class="input-group">
                     <label for="astronautyka-description">KRÓTKI OPIS TRANSMISJI</label>
                     <textarea id="astronautyka-description" class="input-text" maxlength="500" placeholder="np. Start rakiety ..."></textarea>
                 </div>
@@ -1226,10 +1230,13 @@
             modal.setAttribute('aria-hidden', String(!visible));
             if (visible) {
                 const savedUrl = localStorage.getItem('astroltarz_astronautyka_url') || '';
+                const savedName = localStorage.getItem('astroltarz_astronautyka_name') || '';
                 const savedDescription = localStorage.getItem('astroltarz_astronautyka_description') || '';
                 const urlInput = document.getElementById('astronautyka-url');
+                const nameInput = document.getElementById('astronautyka-name');
                 const descriptionInput = document.getElementById('astronautyka-description');
                 if (!urlInput.value) urlInput.value = savedUrl;
+                if (!nameInput.value) nameInput.value = savedName;
                 if (!descriptionInput.value) descriptionInput.value = savedDescription;
                 urlInput.focus();
             }
@@ -1237,8 +1244,10 @@
 
         function sendAstronautyka() {
             const urlInput = document.getElementById('astronautyka-url');
+            const nameInput = document.getElementById('astronautyka-name');
             const descriptionInput = document.getElementById('astronautyka-description');
             const url = urlInput.value.trim();
+            const name = nameInput.value.trim().replace(/\s+/g, ' ');
             const description = descriptionInput.value.trim().replace(/\s+/g, ' ');
             try {
                 const parsed = new URL(url);
@@ -1247,13 +1256,14 @@
                 showStatus('⚠️ PODAJ POPRAWNY LINK');
                 return;
             }
-            if (!description) {
-                showStatus('⚠️ DODAJ OPIS TRANSMISJI');
+            if (!name || !description) {
+                showStatus('⚠️ UZUPEŁNIJ NAZWĘ I OPIS');
                 return;
             }
             localStorage.setItem('astroltarz_astronautyka_url', url);
+            localStorage.setItem('astroltarz_astronautyka_name', name);
             localStorage.setItem('astroltarz_astronautyka_description', description);
-            sendCmd(`!astronautyka ${url} | ${description}`, '🚀 WŁĄCZONO ASTRONAUTYKĘ');
+            sendCmd(`!astronautyka ${url} | ${name} | ${description}`, '🚀 WŁĄCZONO ASTRONAUTYKĘ');
             toggleAstronautyka(false);
         }
 
