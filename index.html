@@ -306,6 +306,9 @@
         .btn-sn34 { border-color: rgba(0, 229, 255, 0.55); }
         .btn-sn34:active { border-color: var(--neon-cyan); box-shadow: 0 0 14px rgba(0, 229, 255, 0.45); }
 
+        .btn-astronautyka { border-color: rgba(0, 255, 170, 0.55); }
+        .btn-astronautyka:active { border-color: #00ffaa; box-shadow: 0 0 14px rgba(0, 255, 170, 0.45); }
+
         .btn-skytinel-archive { border-color: rgba(255, 204, 102, 0.6); }
         .btn-skytinel-archive:active { border-color: var(--neon-amber); box-shadow: 0 0 14px rgba(255, 204, 102, 0.45); }
 
@@ -954,6 +957,10 @@
                     <span class="icon">📡</span>
                     <span style="color: var(--neon-cyan);">TRYB SN34</span>
                 </button>
+                <button class="btn btn-astronautyka" onclick="toggleAstronautyka(true)">
+                    <span class="icon">🚀</span>
+                    <span style="color: #00ffaa;">ASTRONAUTYKA</span>
+                </button>
                 <button class="btn btn-skytinel-archive" onclick="sendCmd('!tryb archiwum_skytinel', '📼 WŁĄCZONO ARCHIWUM SKYTINEL')">
                     <span class="icon">📼</span>
                     <span style="color: var(--neon-amber);">ARCHIWUM SKYTINEL</span>
@@ -1031,6 +1038,25 @@
                 <div class="settings-modal-actions">
                     <button class="action-btn" onclick="sendSettings()">ZAPISZ ZMIANY</button>
                     <button class="action-btn modal-cancel" onclick="toggleSettings(false)">ANULUJ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="astronautyka-modal" class="overlay-modal" aria-hidden="true">
+            <div class="modal-card settings-form" role="dialog" aria-modal="true" aria-labelledby="astronautyka-modal-title">
+                <button class="modal-close" onclick="toggleAstronautyka(false)" aria-label="Zamknij Astronautykę">×</button>
+                <div id="astronautyka-modal-title" class="section-title">Uruchom Astronautykę</div>
+                <div class="input-group">
+                    <label for="astronautyka-url">LINK DO TRANSMISJI</label>
+                    <input type="url" id="astronautyka-url" class="input-text" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="astronautyka-description">KRÓTKI OPIS TRANSMISJI</label>
+                    <textarea id="astronautyka-description" class="input-text" maxlength="500" placeholder="np. Start rakiety ..."></textarea>
+                </div>
+                <div class="settings-modal-actions">
+                    <button class="action-btn" onclick="sendAstronautyka()">URUCHOM TRANSMISJĘ</button>
+                    <button class="action-btn modal-cancel" onclick="toggleAstronautyka(false)">ANULUJ</button>
                 </div>
             </div>
         </div>
@@ -1113,6 +1139,11 @@
             </div>
 
             <div class="help-section">
+                <strong>🚀 Astronautyka</strong>
+                <span>Ręcznie uruchamia transmisję wydarzenia astronautycznego. Podaj link i krótki opis; tryb nie jest częścią automatycznej sekwencji.</span>
+            </div>
+
+            <div class="help-section">
                 <strong>☄️ Tryb SN34</strong>
                 <span>Uruchamia transmisję na żywo nieba ze Stacji Bolidowej SN34 wraz z telemetrią monitoringu.</span>
             </div>
@@ -1186,6 +1217,44 @@
 
         function toggleHelp(show) {
             document.getElementById('help-modal').style.display = show ? 'flex' : 'none';
+        }
+
+        function toggleAstronautyka(visible) {
+            const modal = document.getElementById('astronautyka-modal');
+            if (!modal) return;
+            modal.classList.toggle('visible', visible);
+            modal.setAttribute('aria-hidden', String(!visible));
+            if (visible) {
+                const savedUrl = localStorage.getItem('astroltarz_astronautyka_url') || '';
+                const savedDescription = localStorage.getItem('astroltarz_astronautyka_description') || '';
+                const urlInput = document.getElementById('astronautyka-url');
+                const descriptionInput = document.getElementById('astronautyka-description');
+                if (!urlInput.value) urlInput.value = savedUrl;
+                if (!descriptionInput.value) descriptionInput.value = savedDescription;
+                urlInput.focus();
+            }
+        }
+
+        function sendAstronautyka() {
+            const urlInput = document.getElementById('astronautyka-url');
+            const descriptionInput = document.getElementById('astronautyka-description');
+            const url = urlInput.value.trim();
+            const description = descriptionInput.value.trim().replace(/\s+/g, ' ');
+            try {
+                const parsed = new URL(url);
+                if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname) throw new Error();
+            } catch (error) {
+                showStatus('⚠️ PODAJ POPRAWNY LINK');
+                return;
+            }
+            if (!description) {
+                showStatus('⚠️ DODAJ OPIS TRANSMISJI');
+                return;
+            }
+            localStorage.setItem('astroltarz_astronautyka_url', url);
+            localStorage.setItem('astroltarz_astronautyka_description', description);
+            sendCmd(`!astronautyka ${url} | ${description}`, '🚀 WŁĄCZONO ASTRONAUTYKĘ');
+            toggleAstronautyka(false);
         }
 
         function setAnnTimeMode(mode) {
