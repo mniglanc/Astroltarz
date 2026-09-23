@@ -1373,7 +1373,10 @@
         });
 
         function sendCmd(commandText, label) {
-            if (!DECRYPTED_WEBHOOK) return;
+            if (!DECRYPTED_WEBHOOK) {
+                showStatus("⚠️ SESJA WYGASŁA - ZALOGUJ SIĘ PONOWNIE");
+                return;
+            }
             if (navigator.vibrate) navigator.vibrate(35);
             showStatus("WYSYŁANIE...");
 
