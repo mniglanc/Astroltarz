@@ -1081,6 +1081,11 @@
                 <div class="card-form" style="border-color: rgba(0, 229, 255, 0.35);">
                     
                     <div class="ann-mode-switch">
+                        <button type="button" class="switch-btn active" id="btn-display-static" onclick="setAnnDisplayMode('static')">STAŁE NA EKRANIE</button>
+                        <button type="button" class="switch-btn" id="btn-display-cyclic" onclick="setAnnDisplayMode('cyclic')">CO 5 MINUT / 1 MINUTĘ</button>
+                    </div>
+
+                    <div class="ann-mode-switch">
                         <button type="button" class="switch-btn active" id="btn-mode-duration" onclick="setAnnTimeMode('duration')">CZAS TRWANIA</button>
                         <button type="button" class="switch-btn" id="btn-mode-target" onclick="setAnnTimeMode('target')">DO GODZINY / DNIA</button>
                     </div>
@@ -1176,7 +1181,7 @@
 
             <div class="help-section">
                 <strong>📢 Komunikat (Ogłoszenia)</strong>
-                <span>Wpisz treść, wybierz czas trwania w minutach albo podaj godzinę lub datę wygaśnięcia banera. Opcjonalnie załącz grafikę. Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
+                <span>Wpisz treść, wybierz tryb stały albo cykliczny (1 minuta co 5 minut), czas trwania w minutach albo godzinę lub datę wygaśnięcia banera. Opcjonalnie załącz grafikę. Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
             </div>
 
             <div class="help-section">
@@ -1203,7 +1208,7 @@
                 <div>• <span class="cmd-code">!ciekawostka</span> – wyświetla planszę NASA APOD</div>
                 <div>• <span class="cmd-code">!stopapod</span> – zamyka nakładkę APOD</div>
                 <div>• <span class="cmd-code">!rekwizyt &lt;nazwa|numer&gt;</span> – podświetla wskazany rekwizyt</div>
-                <div>• <span class="cmd-code">!ogloszenie &lt;minuty|GG:MM|data&gt; [tekst]</span> – wyświetla komunikat, opcjonalnie z grafiką</div>
+                <div>• <span class="cmd-code">!ogloszenie &lt;minuty|GG:MM|data&gt; [tekst]</span> – wyświetla komunikat, opcjonalnie z grafiką; wariant cykliczny pokazuje go 1 minutę co 5 minut</div>
                 <div>• <span class="cmd-code">!usunogloszenie</span> – usuwa aktywne ogłoszenie</div>
                 <div>• <span class="cmd-code">!galeria &lt;tytuł&gt;</span> – uruchamia galerię z załączonymi zdjęciami</div>
                 <div>• <span class="cmd-code">!dodajgaleria</span> – dopisuje załączone zdjęcia do aktywnej galerii</div>
@@ -1225,6 +1230,7 @@
         let DECRYPTED_WEBHOOK = null;
         let statusTimer;
         let currentAnnTimeMode = 'duration';
+        let currentAnnDisplayMode = 'static';
 
         function toggleHelp(show) {
             document.getElementById('help-modal').style.display = show ? 'flex' : 'none';
@@ -1307,6 +1313,12 @@
                     dtInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
                 }
             }
+        }
+
+        function setAnnDisplayMode(mode) {
+            currentAnnDisplayMode = mode;
+            document.getElementById('btn-display-static').classList.toggle('active', mode === 'static');
+            document.getElementById('btn-display-cyclic').classList.toggle('active', mode === 'cyclic');
         }
 
         async function decryptPayload(password, base64Bundle) {
@@ -1480,7 +1492,8 @@
             showStatus("WYSYŁANIE OGŁOSZENIA...");
 
             const formData = new FormData();
-            formData.append("content", `!ogloszenie "${timeParam}" ${text}`);
+            const displayMarker = currentAnnDisplayMode === 'cyclic' ? '--cyclic ' : '';
+            formData.append("content", `!ogloszenie "${timeParam}" ${displayMarker}${text}`);
             if (fileInput.files.length > 0) formData.append("file", fileInput.files[0]);
 
             fetch(DECRYPTED_WEBHOOK, {
