@@ -603,6 +603,48 @@
             box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
         }
 
+        .announcement-color-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-bottom: 2px;
+        }
+
+        .announcement-color-panel > label {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .announcement-color-swatches {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .color-swatch,
+        #ann-light-color {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .color-swatch {
+            background: var(--swatch);
+            box-shadow: 0 0 8px color-mix(in srgb, var(--swatch) 60%, transparent);
+        }
+
+        #ann-light-color {
+            background: transparent;
+            overflow: hidden;
+        }
+
         .input-group {
             display: flex;
             flex-direction: column;
@@ -1086,6 +1128,25 @@
                     </div>
 
                     <div class="ann-mode-switch">
+                        <button type="button" class="switch-btn active" id="btn-display-panel" onclick="setAnnDisplayStyle('panel')">PANEL OGŁOSZENIA</button>
+                        <button type="button" class="switch-btn" id="btn-display-clean" onclick="setAnnDisplayStyle('clean')">CZYSTY PEŁNY EKRAN</button>
+                    </div>
+
+                    <div class="announcement-color-panel">
+                        <label>KOLOR OŚWIETLENIA</label>
+                        <div class="announcement-color-swatches">
+                            <button type="button" class="color-swatch" style="--swatch: #ff3333;" onclick="setAnnLightColor('#ff3333')" aria-label="Czerwony"></button>
+                            <button type="button" class="color-swatch" style="--swatch: #ff8c00;" onclick="setAnnLightColor('#ff8c00')" aria-label="Pomarańczowy"></button>
+                            <button type="button" class="color-swatch" style="--swatch: #ffe600;" onclick="setAnnLightColor('#ffe600')" aria-label="Żółty"></button>
+                            <button type="button" class="color-swatch" style="--swatch: #00d084;" onclick="setAnnLightColor('#00d084')" aria-label="Zielony"></button>
+                            <button type="button" class="color-swatch" style="--swatch: #00cfff;" onclick="setAnnLightColor('#00cfff')" aria-label="Cyjan"></button>
+                            <button type="button" class="color-swatch" style="--swatch: #3366ff;" onclick="setAnnLightColor('#3366ff')" aria-label="Niebieski"></button>
+                            <button type="button" class="color-swatch" style="--swatch: #c044ff;" onclick="setAnnLightColor('#c044ff')" aria-label="Fioletowy"></button>
+                            <input type="color" id="ann-light-color" value="#ff5050" onchange="setAnnLightColor(this.value)" aria-label="Własny kolor">
+                        </div>
+                    </div>
+
+                    <div class="ann-mode-switch">
                         <button type="button" class="switch-btn active" id="btn-mode-duration" onclick="setAnnTimeMode('duration')">CZAS TRWANIA</button>
                         <button type="button" class="switch-btn" id="btn-mode-target" onclick="setAnnTimeMode('target')">DO GODZINY / DNIA</button>
                     </div>
@@ -1231,6 +1292,8 @@
         let statusTimer;
         let currentAnnTimeMode = 'duration';
         let currentAnnDisplayMode = 'static';
+        let currentAnnDisplayStyle = 'panel';
+        let currentAnnLightColor = [255, 80, 80];
 
         function toggleHelp(show) {
             document.getElementById('help-modal').style.display = show ? 'flex' : 'none';
@@ -1319,6 +1382,23 @@
             currentAnnDisplayMode = mode;
             document.getElementById('btn-display-static').classList.toggle('active', mode === 'static');
             document.getElementById('btn-display-cyclic').classList.toggle('active', mode === 'cyclic');
+        }
+
+        function setAnnDisplayStyle(style) {
+            currentAnnDisplayStyle = style;
+            document.getElementById('btn-display-panel').classList.toggle('active', style === 'panel');
+            document.getElementById('btn-display-clean').classList.toggle('active', style === 'clean');
+        }
+
+        function setAnnLightColor(hexColor) {
+            const normalized = hexColor.replace('#', '');
+            if (!/^[0-9a-f]{6}$/i.test(normalized)) return;
+            currentAnnLightColor = [
+                parseInt(normalized.slice(0, 2), 16),
+                parseInt(normalized.slice(2, 4), 16),
+                parseInt(normalized.slice(4, 6), 16)
+            ];
+            document.getElementById('ann-light-color').value = `#${normalized}`;
         }
 
         async function decryptPayload(password, base64Bundle) {
@@ -1493,7 +1573,9 @@
 
             const formData = new FormData();
             const displayMarker = currentAnnDisplayMode === 'cyclic' ? '--cyclic ' : '';
-            formData.append("content", `!ogloszenie "${timeParam}" ${displayMarker}${text}`);
+            const styleMarker = currentAnnDisplayStyle === 'clean' ? '--clean ' : '';
+            const lightMarker = `--light=${currentAnnLightColor.join(',')} `;
+            formData.append("content", `!ogloszenie "${timeParam}" ${displayMarker}${styleMarker}${lightMarker}${text}`);
             if (fileInput.files.length > 0) formData.append("file", fileInput.files[0]);
 
             fetch(DECRYPTED_WEBHOOK, {
