@@ -153,6 +153,14 @@
         .settings-link:hover { background: rgba(255, 204, 102, 0.22); }
         .settings-link:active { background: var(--neon-amber); color: #060913; }
 
+        .cache-link {
+            color: var(--neon-purple);
+            background: rgba(192, 132, 252, 0.1);
+            border: 1px solid rgba(192, 132, 252, 0.4);
+        }
+        .cache-link:hover { background: rgba(192, 132, 252, 0.25); }
+        .cache-link:active { background: var(--neon-purple); color: #060913; }
+
         .logout-link {
             color: var(--neon-rose);
             background: rgba(255, 51, 102, 0.1);
@@ -986,6 +994,7 @@
             <div class="top-buttons">
                 <button class="top-btn settings-link" onclick="toggleSettings(true)">USTAWIENIA</button>
                 <button class="top-btn help-link" onclick="toggleHelp(true)">POMOC</button>
+                <button class="top-btn cache-link" onclick="sendCmd('!czysc', '🧹 RESET CACHE URUCHOMIONY')" title="Czyści i ponownie pobiera cache astronomiczny">RESET CACHE</button>
                 <button class="top-btn logout-link" onclick="logout()">WYLOGUJ</button>
             </div>
         </div>
@@ -1275,6 +1284,7 @@
                 <div>• <span class="cmd-code">!dodajgaleria</span> – dopisuje załączone zdjęcia do aktywnej galerii</div>
                 <div>• <span class="cmd-code">!galeriastop</span> – kończy galerię i wraca do trybu standardowego</div>
                 <div>• <span class="cmd-code">!ustawienia klucz=wartość</span> – zmienia ustawienia systemu</div>
+                <div>• <span class="cmd-code">!czysc</span> – czyści i ponownie pobiera cache astronomiczny oraz opróżnia galerię tymczasową</div>
                 <div>• <span class="cmd-code">!wylacz</span> – uruchamia zamykanie systemu operacyjnego</div>
             </div>
             
