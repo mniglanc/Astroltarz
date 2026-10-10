@@ -8,7 +8,7 @@
     <!-- Czytelne fonty techniczne -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
 	<link rel="apple-touch-icon-precomposed" sizes="57x57" href="favicon/apple-touch-icon-57x57.png" />
 	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="favicon/apple-touch-icon-114x114.png" />
 	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="favicon/apple-touch-icon-72x72.png" />
@@ -963,6 +963,237 @@
                 box-shadow: 0 0 15px var(--neon-cyan);
             }
         }
+
+        :root {
+            --space-bg: #010408;
+            --hud-surface: rgba(2, 9, 18, 0.94);
+            --hud-surface-active: rgba(4, 18, 28, 0.98);
+            --neon-cyan: #00d2ff;
+            --hud-border: rgba(0, 210, 255, 0.22);
+            --hud-border-active: rgba(0, 210, 255, 0.65);
+            --text-main: #d7f7ff;
+            --text-secondary: #9ab5c0;
+            --text-muted: #89a4b3;
+        }
+
+        body {
+            background-image: none;
+        }
+
+        .title-block h1,
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .title-block h1 {
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            padding-bottom: 6px;
+            border-bottom: 1px dashed var(--hud-border);
+            text-shadow: 0 0 8px rgba(0, 210, 255, 0.65);
+        }
+
+        #login-screen,
+        .card-form,
+        .modal-card,
+        .modal-content {
+            position: relative;
+            border: 1px solid var(--hud-border);
+            border-radius: 0;
+            background: var(--hud-surface);
+            box-shadow: inset 0 0 16px rgba(0, 210, 255, 0.08);
+            backdrop-filter: none;
+        }
+
+        #login-screen {
+            border-color: var(--hud-border);
+        }
+
+        #login-screen h2 {
+            font-family: 'Orbitron', sans-serif !important;
+        }
+
+        #login-screen::before {
+            top: -1px;
+            left: -1px;
+            right: auto;
+            width: 14px;
+            height: 14px;
+            background: none;
+            box-shadow: none;
+            border-top: 2px solid var(--neon-cyan);
+            border-left: 2px solid var(--neon-cyan);
+        }
+
+        #login-screen::after,
+        .card-form::after,
+        .modal-card::after,
+        .modal-content::after,
+        .quick-modes-grid .btn::after {
+            position: absolute;
+            right: -1px;
+            bottom: -1px;
+            z-index: 2;
+            width: 14px;
+            height: 14px;
+            border-right: 2px solid var(--neon-cyan);
+            border-bottom: 2px solid var(--neon-cyan);
+            content: '';
+            pointer-events: none;
+        }
+
+        .card-form::before,
+        .modal-card::before,
+        .modal-content::before,
+        .quick-modes-grid .btn::before {
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            z-index: 2;
+            width: 14px;
+            height: 14px;
+            border-top: 2px solid var(--neon-cyan);
+            border-left: 2px solid var(--neon-cyan);
+            content: '';
+            pointer-events: none;
+        }
+
+        .card-form {
+            overflow: hidden;
+        }
+
+        .quick-modes-grid .btn {
+            overflow: hidden;
+            border: 1px solid var(--hud-border);
+            border-radius: 0;
+            background: var(--hud-surface);
+            box-shadow: inset 0 0 16px rgba(0, 210, 255, 0.08);
+            backdrop-filter: none;
+        }
+
+        .quick-modes-grid .btn:hover {
+            border-color: var(--neon-cyan);
+            background: var(--hud-surface-active);
+        }
+
+        @media (min-width: 960px) {
+            .quick-modes-grid > .btn,
+            .quick-modes-grid > .meteorite-picker > .btn {
+                width: 140px;
+                min-width: 0;
+            }
+
+            .quick-modes-grid > .btn-astronautyka > span:last-child {
+                font-size: clamp(0.72rem, 0.68vw, 0.78rem);
+                white-space: nowrap;
+            }
+        }
+
+        .btn,
+        .top-btn,
+        .action-btn,
+        .switch-btn,
+        .input-text,
+        .file-box,
+        .meteorite-option {
+            border-radius: 0;
+        }
+
+        .action-btn {
+            border: 1px solid var(--hud-border);
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--neon-cyan);
+            box-shadow: inset 0 0 12px rgba(0, 210, 255, 0.08);
+        }
+
+        .btn-announce,
+        .btn-login {
+            background: rgba(0, 210, 255, 0.12);
+            box-shadow: inset 0 0 12px rgba(0, 210, 255, 0.1);
+        }
+
+        .btn-gallery {
+            border-color: rgba(192, 132, 252, 0.4);
+            background: rgba(192, 132, 252, 0.1);
+            color: #e9d8ff;
+            box-shadow: inset 0 0 12px rgba(192, 132, 252, 0.08);
+        }
+
+        .modal-cancel {
+            border-color: rgba(137, 164, 179, 0.35);
+            background: rgba(137, 164, 179, 0.08);
+            color: var(--text-secondary);
+        }
+
+        .input-text {
+            border-color: var(--hud-border);
+            background: rgba(1, 4, 8, 0.9);
+            color: var(--text-main);
+        }
+
+        .input-text:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.25);
+        }
+
+        .file-box {
+            border-color: var(--hud-border);
+            background: rgba(0, 210, 255, 0.03);
+        }
+
+        .file-box:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 210, 255, 0.08);
+        }
+
+        .switch-btn {
+            border-color: var(--hud-border);
+            background: rgba(1, 4, 8, 0.7);
+        }
+
+        .switch-btn.active {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 210, 255, 0.12);
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.2);
+        }
+
+        .power-box-pc {
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        @media (min-width: 960px) {
+            .power-box-pc .btn-danger {
+                height: 120px;
+                background: rgba(255, 51, 102, 0.12);
+            }
+        }
+
+        .quick-modes-grid > .btn,
+        .quick-modes-grid > .meteorite-picker > .btn {
+            color: var(--neon-cyan);
+        }
+
+        .overlay-modal,
+        #help-modal {
+            background: rgba(1, 4, 8, 0.9);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-card {
+            padding: 24px;
+        }
+
+        #status {
+            border-radius: 0;
+            background: rgba(2, 9, 18, 0.96);
+            box-shadow: inset 0 0 12px rgba(0, 210, 255, 0.08);
+        }
     </style>
 </head>
 <body>
@@ -989,7 +1220,7 @@
         <div class="top-bar">
             <div class="title-block">
                 <h1>ASTROŁTARZ</h1>
-                <div class="sub-badge">KONTROLA SYSTEMU v1.4.1</div>
+                <div class="sub-badge">KONTROLA SYSTEMU v2.0.0</div>
             </div>
             <div class="top-buttons">
                 <button class="top-btn settings-link" onclick="toggleSettings(true)">USTAWIENIA</button>
@@ -1005,35 +1236,35 @@
             <div class="quick-modes-grid">
                 <button class="btn btn-iss" onclick="sendCmd('!tryb iss', '🛰️ WŁĄCZONO ISS')">
                     <span class="icon">🛰️</span>
-                    <span style="color: var(--neon-cyan);">TRYB ISS</span>
+                    <span>TRYB ISS</span>
                 </button>
                 <button class="btn btn-quiz" onclick="sendCmd('!tryb quiz', '🧠 WŁĄCZONO QUIZ')">
                     <span class="icon">🧠</span>
-                    <span style="color: #ffdb70;">QUIZ</span>
+                    <span>QUIZ</span>
                 </button>
                 <button class="btn btn-sn34" onclick="sendCmd('!tryb sn34', '☄️ WŁĄCZONO SN34')">
                     <span class="icon">📡</span>
-                    <span style="color: var(--neon-cyan);">TRYB SN34</span>
+                    <span>TRYB SN34</span>
                 </button>
                 <button class="btn btn-astronautyka" onclick="toggleAstronautyka(true)">
                     <span class="icon">🚀</span>
-                    <span style="color: #00ffaa;">ASTRONAUTYKA</span>
+                    <span>ASTRONAUTYKA</span>
                 </button>
                 <button class="btn btn-skytinel-archive" onclick="sendCmd('!tryb archiwum_skytinel', '📼 WŁĄCZONO ARCHIWUM SKYTINEL')">
                     <span class="icon">📼</span>
-                    <span style="color: var(--neon-amber);">ARCHIWUM SKYTINEL</span>
+                    <span>ARCHIWUM SKYTINEL</span>
                 </button>
                 <button class="btn btn-sky" onclick="sendCmd('!tryb niebo', '🌙 WŁĄCZONO TRYB NIEBO')">
                     <span class="icon sky-icon"><span>🌙</span><span>☀️</span></span>
-                    <span style="color: var(--neon-cyan);">TRYB NIEBO</span>
+                    <span>TRYB NIEBO</span>
                 </button>
                 <button class="btn btn-apod" onclick="sendCmd('!ciekawostka', '🔭 WYŚWIETLONO APOD')">
                     <span class="icon">🔭</span>
-                    <span style="color: var(--neon-purple);">NASA APOD</span>
+                    <span>NASA APOD</span>
                 </button>
                 <button class="btn btn-foto" onclick="sendCmd('!tryb foto', '🌌 WŁĄCZONO FOTO')">
                     <span class="icon">📷</span>
-                    <span style="color: var(--neon-amber);">TRYB FOTO</span>
+                    <span>TRYB FOTO</span>
                 </button>
                 <button class="btn" onclick="sendCmd('!tryb meteoryty', '🪨 WŁĄCZONO METEORYTY')">
                     <span class="icon">🪨</span>
@@ -1129,7 +1360,7 @@
             <!-- LEWY PANEL ROBOCZY: MODUŁ OGŁOSZEŃ -->
             <div style="display: flex; flex-direction: column;">
                 <div class="section-title">Komunikat na Ekranie</div>
-                <div class="card-form" style="border-color: rgba(0, 229, 255, 0.35);">
+                <div class="card-form">
                     
                     <div class="ann-mode-switch">
                         <button type="button" class="switch-btn active" id="btn-display-static" onclick="setAnnDisplayMode('static')">STAŁE NA EKRANIE</button>
@@ -1188,7 +1419,7 @@
             <!-- PRAWY PANEL ROBOCZY: MODUŁ GALERII -->
             <div style="display: flex; flex-direction: column;">
                 <div class="section-title">Pokaz Zdjęć - Galeria</div>
-                <div class="card-form" style="border-color: rgba(192, 132, 252, 0.35);">
+                <div class="card-form">
                     <div class="input-group">
                         <label>TYTUŁ WYDARZENIA</label>
                         <input type="text" id="gal-title" placeholder="np. DZIEŃ KOSMOSU" class="input-text">
