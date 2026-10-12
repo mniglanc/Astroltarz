@@ -1406,8 +1406,8 @@
                         <textarea id="ann-text" placeholder="Wprowadź treść ogłoszenia widoczną na ekranie..." class="input-text" style="height: 100%;"></textarea>
                     </div>
                     <div class="file-box">
-                        <span id="ann-file-label">📁 Dodaj / Upuść plakat graficzny (opcjonalnie)</span>
-                        <input type="file" id="ann-file" accept="image/*" onchange="updateFileName(this, 'ann-file-label')">
+                        <span id="ann-file-label">📁 Dodaj / Upuść plakat lub film MP4/WebM (opcjonalnie)</span>
+                        <input type="file" id="ann-file" accept=".png,.jpg,.jpeg,.webp,.mp4,.webm" onchange="updateAnnouncementFile(this)">
                     </div>
                     <button class="action-btn btn-announce" onclick="sendAnnouncement()">WYŚWIETL OGŁOSZENIE</button>
                     <button class="btn btn-danger btn-full" onclick="sendCmd('!usunogloszenie', '🗑️ ZDJĘTO OGŁOSZENIE')">
@@ -1482,7 +1482,7 @@
 
             <div class="help-section">
                 <strong>📢 Komunikat (Ogłoszenia)</strong>
-                <span>Wpisz treść, wybierz tryb stały albo cykliczny (1 minuta co 5 minut), czas trwania w minutach albo godzinę lub datę wygaśnięcia banera. Opcjonalnie załącz grafikę. Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
+                <span>Wpisz treść, wybierz tryb stały albo cykliczny (1 minuta co 5 minut), czas trwania w minutach albo godzinę lub datę wygaśnięcia banera. Opcjonalnie załącz plakat albo film MP4/WebM (odtwarzany bez dźwięku w pętli). Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
             </div>
 
             <div class="help-section">
@@ -1509,7 +1509,7 @@
                 <div>• <span class="cmd-code">!ciekawostka</span> – wyświetla planszę NASA APOD</div>
                 <div>• <span class="cmd-code">!stopapod</span> – zamyka nakładkę APOD</div>
                 <div>• <span class="cmd-code">!rekwizyt &lt;nazwa|numer&gt;</span> – podświetla wskazany rekwizyt</div>
-                <div>• <span class="cmd-code">!ogloszenie &lt;minuty|GG:MM|data&gt; [tekst]</span> – wyświetla komunikat, opcjonalnie z grafiką; wariant cykliczny pokazuje go 1 minutę co 5 minut</div>
+                <div>• <span class="cmd-code">!ogloszenie &lt;minuty|GG:MM|data&gt; [tekst]</span> – wyświetla komunikat, opcjonalnie z plakatem albo filmem MP4/WebM; wariant cykliczny pokazuje go 1 minutę co 5 minut</div>
                 <div>• <span class="cmd-code">!usunogloszenie</span> – usuwa aktywne ogłoszenie</div>
                 <div>• <span class="cmd-code">!galeria &lt;tytuł&gt;</span> – uruchamia galerię z załączonymi zdjęciami</div>
                 <div>• <span class="cmd-code">!dodajgaleria</span> – dopisuje załączone zdjęcia do aktywnej galerii</div>
@@ -1791,6 +1791,7 @@
             if (!DECRYPTED_WEBHOOK) return;
             const text = document.getElementById('ann-text').value.trim();
             const fileInput = document.getElementById('ann-file');
+            const attachment = fileInput.files[0];
 
             let timeParam = "1";
             if (currentAnnTimeMode === 'duration') {
@@ -1804,8 +1805,12 @@
                 timeParam = targetDt; // ciąg w formacie YYYY-MM-DDTHH:MM
             }
 
-            if (!text && fileInput.files.length === 0) {
+            if (!text && !attachment) {
                 showStatus("⚠️ BRAK TREŚCI OGŁOSZENIA");
+                return;
+            }
+            if (attachment && !/\.(png|jpe?g|webp|mp4|webm)$/i.test(attachment.name)) {
+                showStatus("⚠️ DOZWOLONE: PLAKAT PNG/JPG/WEBP LUB FILM MP4/WEBM");
                 return;
             }
 
@@ -1817,7 +1822,7 @@
             const styleMarker = currentAnnDisplayStyle === 'clean' ? '--clean ' : '';
             const lightMarker = `--light=${currentAnnLightColor.join(',')} `;
             formData.append("content", `!ogloszenie "${timeParam}" ${displayMarker}${styleMarker}${lightMarker}${text}`);
-            if (fileInput.files.length > 0) formData.append("file", fileInput.files[0]);
+            if (attachment) formData.append("file", attachment);
 
             fetch(DECRYPTED_WEBHOOK, {
                 method: "POST",
@@ -1827,7 +1832,7 @@
                     showStatus("📢 OGŁOSZENIE WYŚWIETLONE");
                     document.getElementById('ann-text').value = "";
                     fileInput.value = "";
-                    document.getElementById('ann-file-label').textContent = "📁 Dodaj / Upuść plakat graficzny (opcjonalnie)";
+                    document.getElementById('ann-file-label').textContent = "📁 Dodaj / Upuść plakat lub film MP4/WebM (opcjonalnie)";
                 } else showStatus("⚠️ BŁĄD WYSYŁANIA");
             }).catch(() => showStatus("❌ BRAK POŁĄCZENIA"));
         }
@@ -1865,6 +1870,19 @@
 
         function updateFileName(input, labelId) {
             if (input.files.length > 0) document.getElementById(labelId).textContent = "📄 " + input.files[0].name;
+        }
+
+        function updateAnnouncementFile(input) {
+            if (!input.files.length) return;
+            const file = input.files[0];
+            if (!/\.(png|jpe?g|webp|mp4|webm)$/i.test(file.name)) {
+                showStatus("⚠️ DOZWOLONE: PLAKAT PNG/JPG/WEBP LUB FILM MP4/WEBM");
+                input.value = "";
+                return;
+            }
+            const isVideo = /\.(mp4|webm)$/i.test(file.name);
+            document.getElementById('ann-file-label').textContent =
+                `${isVideo ? "🎞️" : "🖼️"} ${file.name}`;
         }
 
         function updateFilesCount(input, labelId) {
