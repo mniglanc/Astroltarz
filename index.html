@@ -748,6 +748,15 @@
             box-shadow: 0 2px 10px rgba(192, 132, 252, 0.3);
         }
 
+        .btn-gazette {
+            background: linear-gradient(135deg, #087e9b, #00cfff);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 207, 255, 0.3);
+        }
+
+        .gazette-workspace { grid-column: 1 / -1; }
+        .gazette-card-form { height: auto; }
+
         .btn-login { 
             width: 100%; 
             background: linear-gradient(135deg, #00b4d8, var(--neon-cyan)); 
@@ -1316,6 +1325,10 @@
                     <label for="setting-mode-duration">CZAS WYŚWIETLANIA TRYBU (SEKUNDY)</label>
                     <input type="number" id="setting-mode-duration" value="60" min="5" max="3600" step="1" class="input-text">
                 </div>
+                <div class="input-group">
+                    <label for="setting-gazette-photo-duration">CZAS WYŚWIETLANIA ZDJĘCIA W GAZETCE (SEKUNDY)</label>
+                    <input type="number" id="setting-gazette-photo-duration" value="60" min="5" max="3600" step="1" class="input-text">
+                </div>
                 <label class="checkbox-container">
                     <input type="checkbox" id="setting-intro-enabled">
                     <span>WŁĄCZ INTRO PRZY NASTĘPNYM URUCHOMIENIU</span>
@@ -1448,6 +1461,31 @@
                 </div>
             </div>
 
+            <div class="gazette-workspace" style="display: flex; flex-direction: column;">
+                <div class="section-title">Gazetka</div>
+                <div class="card-form gazette-card-form">
+                    <div class="help-section">
+                        <span>Wyświetla zdjęcia z folderu Gazetka (JPG, JPEG, PNG lub WEBP, także z podfolderów). Po upływie ustawionego czasu system wróci do automatycznej sekwencji.</span>
+                    </div>
+                    <div class="ann-mode-switch">
+                        <button type="button" class="switch-btn active" id="btn-gazette-duration" onclick="setGazetteTimeMode('duration')">CZAS TRWANIA</button>
+                        <button type="button" class="switch-btn" id="btn-gazette-target" onclick="setGazetteTimeMode('target')">DO GODZINY / DNIA</button>
+                    </div>
+                    <div class="input-group" id="group-gazette-duration">
+                        <label for="gazette-time">CZAS AKTYWNOŚCI (MINUTY)</label>
+                        <input type="number" id="gazette-time" value="60" min="1" step="1" class="input-text">
+                    </div>
+                    <div class="input-group" id="group-gazette-target" style="display: none;">
+                        <label for="gazette-datetime">AKTYWNA DOKŁADNIE DO:</label>
+                        <input type="datetime-local" id="gazette-datetime" class="input-text">
+                    </div>
+                    <div class="gallery-actions-grid">
+                        <button class="action-btn btn-gazette" onclick="sendGazette()">WŁĄCZ GAZETKĘ</button>
+                        <button class="btn btn-danger btn-full" onclick="sendCmd('!gazettastop', '⏹️ GAZETKA ZATRZYMANA — POWRÓT DO SEKWENCJI')">ZAKOŃCZ I WRÓĆ DO SEKWENCJI</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -1501,8 +1539,13 @@
             </div>
 
             <div class="help-section">
+                <strong>📰 Gazetka</strong>
+                <span>Wyświetla zdjęcia z folderu Gazetka z efektem Ken Burns. W module Gazetki wybierz czas trwania w minutach albo dokładną datę i godzinę zakończenia. Po terminie system sam wróci do automatycznej sekwencji; możesz też zakończyć tryb wcześniej.</span>
+            </div>
+
+            <div class="help-section">
                 <strong>⚙️ Ustawienia</strong>
-                <span>Możesz zmienić skalę animacji Ken Burns, wspólny czas wyświetlania każdego trybu automatycznej sekwencji oraz włączenie intro.</span>
+                <span>Możesz zmienić skalę animacji Ken Burns, wspólny czas wyświetlania każdego trybu automatycznej sekwencji, czas pojedynczego zdjęcia w Gazetce oraz włączenie intro.</span>
             </div>
 
             <div class="help-section">
@@ -1516,6 +1559,7 @@
                 <div>• <span class="cmd-code">!tryb sn34</span> – włącza widok stacji bolidowej SN34</div>
                 <div>• <span class="cmd-code">!tryb niebo</span> – włącza informacje o aktualnym niebie</div>
                 <div>• <span class="cmd-code">!tryb foto</span> – włącza tryb zdjęć</div>
+                <div>• <span class="cmd-code">!gazetka &lt;minuty|GG:MM|RRRR-MM-DDTHH:MM&gt;</span> – uruchamia Gazetkę do wskazanego terminu</div>
                 <div>• <span class="cmd-code">!ciekawostka</span> – wyświetla planszę NASA APOD</div>
                 <div>• <span class="cmd-code">!stopapod</span> – zamyka nakładkę APOD</div>
                 <div>• <span class="cmd-code">!rekwizyt &lt;nazwa|numer&gt;</span> – podświetla wskazany rekwizyt</div>
@@ -1524,6 +1568,7 @@
                 <div>• <span class="cmd-code">!galeria &lt;tytuł&gt;</span> – uruchamia galerię z załączonymi zdjęciami</div>
                 <div>• <span class="cmd-code">!dodajgaleria</span> – dopisuje załączone zdjęcia do aktywnej galerii</div>
                 <div>• <span class="cmd-code">!galeriastop</span> – kończy galerię i wraca do trybu standardowego</div>
+                <div>• <span class="cmd-code">!gazettastop</span> – kończy Gazetkę i wraca do automatycznej sekwencji</div>
                 <div>• <span class="cmd-code">!ustawienia klucz=wartość</span> – zmienia ustawienia systemu</div>
                 <div>• <span class="cmd-code">!czysc</span> – czyści i ponownie pobiera cache astronomiczny oraz opróżnia galerię tymczasową</div>
                 <div>• <span class="cmd-code">!wylacz</span> – uruchamia zamykanie systemu operacyjnego</div>
@@ -1542,6 +1587,7 @@
         let DECRYPTED_WEBHOOK = null;
         let statusTimer;
         let currentAnnTimeMode = 'duration';
+        let currentGazetteTimeMode = 'duration';
         let currentAnnDisplayMode = 'static';
         let currentAnnDisplayStyle = 'panel';
         let currentAnnLightColor = [255, 80, 80];
@@ -1627,6 +1673,30 @@
                     
                     dtInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
                 }
+            }
+        }
+
+        function setGazetteTimeMode(mode) {
+            currentGazetteTimeMode = mode;
+            const durationButton = document.getElementById('btn-gazette-duration');
+            const targetButton = document.getElementById('btn-gazette-target');
+            const durationGroup = document.getElementById('group-gazette-duration');
+            const targetGroup = document.getElementById('group-gazette-target');
+            const useTarget = mode === 'target';
+
+            durationButton.classList.toggle('active', !useTarget);
+            targetButton.classList.toggle('active', useTarget);
+            durationGroup.style.display = useTarget ? 'none' : 'flex';
+            targetGroup.style.display = useTarget ? 'flex' : 'none';
+
+            const dateInput = document.getElementById('gazette-datetime');
+            if (useTarget && !dateInput.value) {
+                const nextHour = new Date();
+                nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
+                const localValue = new Date(
+                    nextHour.getTime() - nextHour.getTimezoneOffset() * 60000
+                ).toISOString().slice(0, 16);
+                dateInput.value = localValue;
             }
         }
 
@@ -1758,6 +1828,7 @@
         const settingFields = {
             'setting-kb-scale': 'ken_burns_scale',
             'setting-mode-duration': 'mode_duration',
+            'setting-gazette-photo-duration': 'gazette_photo_duration',
             'setting-intro-enabled': 'intro_enabled',
             'setting-meteorites-enabled': 'meteorites_enabled'
         };
@@ -1779,6 +1850,7 @@
             const values = {
                 ken_burns_scale: document.getElementById('setting-kb-scale').value,
                 mode_duration: document.getElementById('setting-mode-duration').value,
+                gazette_photo_duration: document.getElementById('setting-gazette-photo-duration').value,
                 intro_enabled: document.getElementById('setting-intro-enabled').checked ? 'on' : 'off',
                 meteorites_enabled: document.getElementById('setting-meteorites-enabled').checked ? 'on' : 'off'
             };
@@ -1856,6 +1928,32 @@
                     document.getElementById('ann-file-label').textContent = "📁 Dodaj / Upuść plakat lub film MP4/WebM (opcjonalnie)";
                 } else showStatus("⚠️ BŁĄD WYSYŁANIA");
             }).catch(() => showStatus("❌ BRAK POŁĄCZENIA"));
+        }
+
+        function sendGazette() {
+            if (!DECRYPTED_WEBHOOK) {
+                showStatus("⚠️ SESJA WYGASŁA - ZALOGUJ SIĘ PONOWNIE");
+                return;
+            }
+
+            let timeParam;
+            if (currentGazetteTimeMode === 'duration') {
+                const duration = Number(document.getElementById('gazette-time').value);
+                if (!Number.isFinite(duration) || duration <= 0) {
+                    showStatus("⚠️ PODAJ DODATNI CZAS W MINUTACH");
+                    return;
+                }
+                timeParam = String(duration);
+            } else {
+                const targetDateTime = document.getElementById('gazette-datetime').value;
+                if (!targetDateTime || new Date(targetDateTime).getTime() <= Date.now()) {
+                    showStatus("⚠️ WYBIERZ PRZYSZŁĄ DATĘ I GODZINĘ");
+                    return;
+                }
+                timeParam = targetDateTime;
+            }
+
+            sendCmd(`!gazetka "${timeParam}"`, "📰 GAZETKA AKTYWNA DO USTAWIONEGO TERMINU");
         }
 
         function sendGallery(mode) {
