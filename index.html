@@ -696,6 +696,22 @@
             color-scheme: dark;
         }
 
+        .time-selects {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            gap: 6px;
+            align-items: center;
+        }
+
+        .time-selects select {
+            color-scheme: dark;
+        }
+
+        .time-selects span {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
         textarea.input-text {
             min-height: 70px;
             resize: vertical;
@@ -1429,7 +1445,15 @@
                         <label>AKTYWNE DOKŁADNIE DO:</label>
                         <div class="datetime-inputs">
                             <input type="date" id="ann-date" class="input-text" aria-label="Data zakończenia ogłoszenia">
-                            <input type="text" id="ann-target-time" class="input-text" aria-label="Godzina zakończenia ogłoszenia, format 24-godzinny" inputmode="numeric" autocomplete="off" maxlength="5" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="GG:MM">
+                            <div class="time-selects" aria-label="Godzina zakończenia ogłoszenia, format 24-godzinny">
+                                <select id="ann-target-hour" class="input-text" aria-label="Godzina zakończenia ogłoszenia">
+                                    <option value="" selected disabled>GG</option>
+                                </select>
+                                <span aria-hidden="true">:</span>
+                                <select id="ann-target-minute" class="input-text" aria-label="Minuty zakończenia ogłoszenia">
+                                    <option value="" selected disabled>MM</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -1488,7 +1512,15 @@
                         <label>AKTYWNA DOKŁADNIE DO:</label>
                         <div class="datetime-inputs">
                             <input type="date" id="gazette-date" class="input-text" aria-label="Data zakończenia Gazetki">
-                            <input type="text" id="gazette-clock" class="input-text" aria-label="Godzina zakończenia Gazetki, format 24-godzinny" inputmode="numeric" autocomplete="off" maxlength="5" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="GG:MM">
+                            <div class="time-selects" aria-label="Godzina zakończenia Gazetki, format 24-godzinny">
+                                <select id="gazette-hour" class="input-text" aria-label="Godzina zakończenia Gazetki">
+                                    <option value="" selected disabled>GG</option>
+                                </select>
+                                <span aria-hidden="true">:</span>
+                                <select id="gazette-minute" class="input-text" aria-label="Minuty zakończenia Gazetki">
+                                    <option value="" selected disabled>MM</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="gallery-actions-grid">
@@ -1653,7 +1685,21 @@
             toggleAstronautyka(false);
         }
 
-        function setTargetDateTimeToNextHour(dateInputId, timeInputId) {
+        function populateTimeSelectors() {
+            const hours = Array.from({ length: 24 }, (_, value) => String(value).padStart(2, '0'));
+            const minutes = Array.from({ length: 60 }, (_, value) => String(value).padStart(2, '0'));
+
+            for (const id of ['ann-target-hour', 'gazette-hour']) {
+                const select = document.getElementById(id);
+                for (const value of hours) select.add(new Option(value, value));
+            }
+            for (const id of ['ann-target-minute', 'gazette-minute']) {
+                const select = document.getElementById(id);
+                for (const value of minutes) select.add(new Option(value, value));
+            }
+        }
+
+        function setTargetDateTimeToNextHour(dateInputId, hourInputId, minuteInputId) {
             const nextHour = new Date();
             nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
 
@@ -1664,13 +1710,16 @@
             const minutes = String(nextHour.getMinutes()).padStart(2, '0');
 
             document.getElementById(dateInputId).value = `${year}-${month}-${day}`;
-            document.getElementById(timeInputId).value = `${hours}:${minutes}`;
+            document.getElementById(hourInputId).value = hours;
+            document.getElementById(minuteInputId).value = minutes;
         }
 
-        function getTargetDateTime(dateInputId, timeInputId) {
+        function getTargetDateTime(dateInputId, hourInputId, minuteInputId) {
             const date = document.getElementById(dateInputId).value;
-            const time = document.getElementById(timeInputId).value.trim();
-            if (!date || !/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/.test(time)) return '';
+            const hour = document.getElementById(hourInputId).value;
+            const minute = document.getElementById(minuteInputId).value;
+            if (!date || !/^(?:[01][0-9]|2[0-3])$/.test(hour) || !/^[0-5][0-9]$/.test(minute)) return '';
+            const time = `${hour}:${minute}`;
             return `${date}T${time}`;
         }
 
@@ -1693,9 +1742,10 @@
                 grpTarget.style.display = 'flex';
 
                 const dateInput = document.getElementById('ann-date');
-                const timeInput = document.getElementById('ann-target-time');
-                if (!dateInput.value && !timeInput.value) {
-                    setTargetDateTimeToNextHour('ann-date', 'ann-target-time');
+                const hourInput = document.getElementById('ann-target-hour');
+                const minuteInput = document.getElementById('ann-target-minute');
+                if (!dateInput.value && !hourInput.value && !minuteInput.value) {
+                    setTargetDateTimeToNextHour('ann-date', 'ann-target-hour', 'ann-target-minute');
                 }
             }
         }
@@ -1714,9 +1764,10 @@
             targetGroup.style.display = useTarget ? 'flex' : 'none';
 
             const dateInput = document.getElementById('gazette-date');
-            const timeInput = document.getElementById('gazette-clock');
-            if (useTarget && !dateInput.value && !timeInput.value) {
-                setTargetDateTimeToNextHour('gazette-date', 'gazette-clock');
+            const hourInput = document.getElementById('gazette-hour');
+            const minuteInput = document.getElementById('gazette-minute');
+            if (useTarget && !dateInput.value && !hourInput.value && !minuteInput.value) {
+                setTargetDateTimeToNextHour('gazette-date', 'gazette-hour', 'gazette-minute');
             }
         }
 
@@ -1805,6 +1856,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
+            populateTimeSelectors();
             const savedPass = localStorage.getItem('astroltarz_session');
             if (savedPass) {
                 const webhook = await decryptPayload(savedPass, ENCRYPTED_PAYLOAD);
@@ -1909,7 +1961,7 @@
             if (currentAnnTimeMode === 'duration') {
                 timeParam = document.getElementById('ann-time').value || "1";
             } else {
-                const targetDt = getTargetDateTime('ann-date', 'ann-target-time');
+                const targetDt = getTargetDateTime('ann-date', 'ann-target-hour', 'ann-target-minute');
                 if (!targetDt) {
                     showStatus("⚠️ WYBIERZ DATĘ I GODZINĘ W FORMACIE 24H (GG:MM)");
                     return;
@@ -1965,7 +2017,7 @@
                 }
                 timeParam = String(duration);
             } else {
-                const targetDateTime = getTargetDateTime('gazette-date', 'gazette-clock');
+                const targetDateTime = getTargetDateTime('gazette-date', 'gazette-hour', 'gazette-minute');
                 if (!targetDateTime || new Date(targetDateTime).getTime() <= Date.now()) {
                     showStatus("⚠️ WYBIERZ PRZYSZŁĄ DATĘ I GODZINĘ W FORMACIE 24H (GG:MM)");
                     return;
