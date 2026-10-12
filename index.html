@@ -1386,6 +1386,16 @@
                         </div>
                     </div>
 
+                    <div class="announcement-color-panel">
+                        <label>ANIMACJA AMBILIGHTU</label>
+                        <div class="ann-mode-switch">
+                            <button type="button" class="switch-btn active" id="btn-ambilight-static" onclick="setAnnAmbilightMode('static')">STAŁE</button>
+                            <button type="button" class="switch-btn" id="btn-ambilight-breath" onclick="setAnnAmbilightMode('breath')">ODDECH</button>
+                            <button type="button" class="switch-btn" id="btn-ambilight-heartbeat" onclick="setAnnAmbilightMode('heartbeat')">BICIE SERCA</button>
+                            <button type="button" class="switch-btn" id="btn-ambilight-wave" onclick="setAnnAmbilightMode('wave')">FALA</button>
+                        </div>
+                    </div>
+
                     <div class="ann-mode-switch">
                         <button type="button" class="switch-btn active" id="btn-mode-duration" onclick="setAnnTimeMode('duration')">CZAS TRWANIA</button>
                         <button type="button" class="switch-btn" id="btn-mode-target" onclick="setAnnTimeMode('target')">DO GODZINY / DNIA</button>
@@ -1482,7 +1492,7 @@
 
             <div class="help-section">
                 <strong>📢 Komunikat (Ogłoszenia)</strong>
-                <span>Wpisz treść, wybierz tryb stały albo cykliczny (1 minuta co 5 minut), czas trwania w minutach albo godzinę lub datę wygaśnięcia banera. Opcjonalnie załącz plakat albo film MP4/WebM (odtwarzany bez dźwięku w pętli). Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
+                <span>Wpisz treść, wybierz tryb stały albo cykliczny (1 minuta co 5 minut), czas trwania w minutach albo godzinę lub datę wygaśnięcia banera. Wybierz kolor i animację Ambilight: stałe światło, oddech, bicie serca albo fala. Opcjonalnie załącz plakat albo film MP4/WebM (odtwarzany bez dźwięku w pętli). Przycisk „Przerwij ogłoszenie” zdejmuje baner przed czasem.</span>
             </div>
 
             <div class="help-section">
@@ -1509,7 +1519,7 @@
                 <div>• <span class="cmd-code">!ciekawostka</span> – wyświetla planszę NASA APOD</div>
                 <div>• <span class="cmd-code">!stopapod</span> – zamyka nakładkę APOD</div>
                 <div>• <span class="cmd-code">!rekwizyt &lt;nazwa|numer&gt;</span> – podświetla wskazany rekwizyt</div>
-                <div>• <span class="cmd-code">!ogloszenie &lt;minuty|GG:MM|data&gt; [tekst]</span> – wyświetla komunikat, opcjonalnie z plakatem albo filmem MP4/WebM; wariant cykliczny pokazuje go 1 minutę co 5 minut</div>
+                <div>• <span class="cmd-code">!ogloszenie &lt;minuty|GG:MM|data&gt; [--ambilight=static|breath|heartbeat|wave] [tekst]</span> – wyświetla komunikat, opcjonalnie z plakatem albo filmem MP4/WebM; wariant cykliczny pokazuje go 1 minutę co 5 minut</div>
                 <div>• <span class="cmd-code">!usunogloszenie</span> – usuwa aktywne ogłoszenie</div>
                 <div>• <span class="cmd-code">!galeria &lt;tytuł&gt;</span> – uruchamia galerię z załączonymi zdjęciami</div>
                 <div>• <span class="cmd-code">!dodajgaleria</span> – dopisuje załączone zdjęcia do aktywnej galerii</div>
@@ -1535,6 +1545,7 @@
         let currentAnnDisplayMode = 'static';
         let currentAnnDisplayStyle = 'panel';
         let currentAnnLightColor = [255, 80, 80];
+        let currentAnnAmbilightMode = 'static';
 
         function toggleHelp(show) {
             document.getElementById('help-modal').style.display = show ? 'flex' : 'none';
@@ -1640,6 +1651,15 @@
                 parseInt(normalized.slice(4, 6), 16)
             ];
             document.getElementById('ann-light-color').value = `#${normalized}`;
+        }
+
+        function setAnnAmbilightMode(mode) {
+            if (!['static', 'breath', 'heartbeat', 'wave'].includes(mode)) return;
+            currentAnnAmbilightMode = mode;
+            document.getElementById('btn-ambilight-static').classList.toggle('active', mode === 'static');
+            document.getElementById('btn-ambilight-breath').classList.toggle('active', mode === 'breath');
+            document.getElementById('btn-ambilight-heartbeat').classList.toggle('active', mode === 'heartbeat');
+            document.getElementById('btn-ambilight-wave').classList.toggle('active', mode === 'wave');
         }
 
         async function decryptPayload(password, base64Bundle) {
@@ -1821,7 +1841,8 @@
             const displayMarker = currentAnnDisplayMode === 'cyclic' ? '--cyclic ' : '';
             const styleMarker = currentAnnDisplayStyle === 'clean' ? '--clean ' : '';
             const lightMarker = `--light=${currentAnnLightColor.join(',')} `;
-            formData.append("content", `!ogloszenie "${timeParam}" ${displayMarker}${styleMarker}${lightMarker}${text}`);
+            const ambilightMarker = `--ambilight=${currentAnnAmbilightMode} `;
+            formData.append("content", `!ogloszenie "${timeParam}" ${displayMarker}${styleMarker}${lightMarker}${ambilightMarker}${text}`);
             if (attachment) formData.append("file", attachment);
 
             fetch(DECRYPTED_WEBHOOK, {
