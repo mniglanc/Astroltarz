@@ -686,7 +686,13 @@
             box-shadow: 0 0 8px rgba(0, 229, 255, 0.25);
         }
 
-        input[type="datetime-local"].input-text {
+        .datetime-inputs {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+            gap: 8px;
+        }
+
+        .datetime-inputs input[type="date"] {
             color-scheme: dark;
         }
 
@@ -1421,7 +1427,10 @@
 
                     <div class="input-group" id="group-ann-target" style="display: none;">
                         <label>AKTYWNE DOKŁADNIE DO:</label>
-                        <input type="datetime-local" id="ann-datetime" class="input-text">
+                        <div class="datetime-inputs">
+                            <input type="date" id="ann-date" class="input-text" aria-label="Data zakończenia ogłoszenia">
+                            <input type="text" id="ann-target-time" class="input-text" aria-label="Godzina zakończenia ogłoszenia, format 24-godzinny" inputmode="numeric" autocomplete="off" maxlength="5" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="GG:MM">
+                        </div>
                     </div>
 
                     <div class="input-group" style="flex: 1;">
@@ -1476,8 +1485,11 @@
                         <input type="number" id="gazette-time" value="60" min="1" step="1" class="input-text">
                     </div>
                     <div class="input-group" id="group-gazette-target" style="display: none;">
-                        <label for="gazette-datetime">AKTYWNA DOKŁADNIE DO:</label>
-                        <input type="datetime-local" id="gazette-datetime" class="input-text">
+                        <label>AKTYWNA DOKŁADNIE DO:</label>
+                        <div class="datetime-inputs">
+                            <input type="date" id="gazette-date" class="input-text" aria-label="Data zakończenia Gazetki">
+                            <input type="text" id="gazette-clock" class="input-text" aria-label="Godzina zakończenia Gazetki, format 24-godzinny" inputmode="numeric" autocomplete="off" maxlength="5" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="GG:MM">
+                        </div>
                     </div>
                     <div class="gallery-actions-grid">
                         <button class="action-btn btn-gazette" onclick="sendGazette()">WŁĄCZ GAZETKĘ</button>
@@ -1641,6 +1653,27 @@
             toggleAstronautyka(false);
         }
 
+        function setTargetDateTimeToNextHour(dateInputId, timeInputId) {
+            const nextHour = new Date();
+            nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
+
+            const year = nextHour.getFullYear();
+            const month = String(nextHour.getMonth() + 1).padStart(2, '0');
+            const day = String(nextHour.getDate()).padStart(2, '0');
+            const hours = String(nextHour.getHours()).padStart(2, '0');
+            const minutes = String(nextHour.getMinutes()).padStart(2, '0');
+
+            document.getElementById(dateInputId).value = `${year}-${month}-${day}`;
+            document.getElementById(timeInputId).value = `${hours}:${minutes}`;
+        }
+
+        function getTargetDateTime(dateInputId, timeInputId) {
+            const date = document.getElementById(dateInputId).value;
+            const time = document.getElementById(timeInputId).value.trim();
+            if (!date || !/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/.test(time)) return '';
+            return `${date}T${time}`;
+        }
+
         function setAnnTimeMode(mode) {
             currentAnnTimeMode = mode;
             const btnDuration = document.getElementById('btn-mode-duration');
@@ -1659,19 +1692,10 @@
                 grpDuration.style.display = 'none';
                 grpTarget.style.display = 'flex';
 
-                const dtInput = document.getElementById('ann-datetime');
-                if (!dtInput.value) {
-                    const now = new Date();
-                    // Ustawiamy równą kolejną godzinę z zerowymi minutami i sekundami:
-                    now.setHours(now.getHours() + 1, 0, 0, 0);
-                    
-                    const year = now.getFullYear();
-                    const month = String(now.getMonth() + 1).padStart(2, '0');
-                    const day = String(now.getDate()).padStart(2, '0');
-                    const hours = String(now.getHours()).padStart(2, '0');
-                    const minutes = String(now.getMinutes()).padStart(2, '0');
-                    
-                    dtInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                const dateInput = document.getElementById('ann-date');
+                const timeInput = document.getElementById('ann-target-time');
+                if (!dateInput.value && !timeInput.value) {
+                    setTargetDateTimeToNextHour('ann-date', 'ann-target-time');
                 }
             }
         }
@@ -1689,14 +1713,10 @@
             durationGroup.style.display = useTarget ? 'none' : 'flex';
             targetGroup.style.display = useTarget ? 'flex' : 'none';
 
-            const dateInput = document.getElementById('gazette-datetime');
-            if (useTarget && !dateInput.value) {
-                const nextHour = new Date();
-                nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
-                const localValue = new Date(
-                    nextHour.getTime() - nextHour.getTimezoneOffset() * 60000
-                ).toISOString().slice(0, 16);
-                dateInput.value = localValue;
+            const dateInput = document.getElementById('gazette-date');
+            const timeInput = document.getElementById('gazette-clock');
+            if (useTarget && !dateInput.value && !timeInput.value) {
+                setTargetDateTimeToNextHour('gazette-date', 'gazette-clock');
             }
         }
 
@@ -1889,12 +1909,12 @@
             if (currentAnnTimeMode === 'duration') {
                 timeParam = document.getElementById('ann-time').value || "1";
             } else {
-                const targetDt = document.getElementById('ann-datetime').value;
+                const targetDt = getTargetDateTime('ann-date', 'ann-target-time');
                 if (!targetDt) {
-                    showStatus("⚠️ WYBIERZ DATĘ I GODZINĘ");
+                    showStatus("⚠️ WYBIERZ DATĘ I GODZINĘ W FORMACIE 24H (GG:MM)");
                     return;
                 }
-                timeParam = targetDt; // ciąg w formacie YYYY-MM-DDTHH:MM
+                timeParam = targetDt;
             }
 
             if (!text && !attachment) {
@@ -1945,9 +1965,9 @@
                 }
                 timeParam = String(duration);
             } else {
-                const targetDateTime = document.getElementById('gazette-datetime').value;
+                const targetDateTime = getTargetDateTime('gazette-date', 'gazette-clock');
                 if (!targetDateTime || new Date(targetDateTime).getTime() <= Date.now()) {
-                    showStatus("⚠️ WYBIERZ PRZYSZŁĄ DATĘ I GODZINĘ");
+                    showStatus("⚠️ WYBIERZ PRZYSZŁĄ DATĘ I GODZINĘ W FORMACIE 24H (GG:MM)");
                     return;
                 }
                 timeParam = targetDateTime;
