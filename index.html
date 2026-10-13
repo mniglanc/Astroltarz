@@ -1292,7 +1292,7 @@
                     <span class="icon sky-icon"><span>🌙</span><span>☀️</span></span>
                     <span>TRYB NIEBO</span>
                 </button>
-                <button class="btn btn-stellarium" onclick="openStellariumPanel()" title="Otwiera Stellarium Web w osobnym oknie; wymaga połączenia z internetem">
+                <button class="btn btn-stellarium" onclick="openStellariumPanel()" title="Uruchamia Stellarium Web na komputerze Astrołtarza; wymaga internetu">
                     <span class="icon">🔭</span>
                     <span>STELLARIUM NAD WRÓBLEWEM</span>
                 </button>
@@ -1643,8 +1643,6 @@
     <script>
         const ENCRYPTED_PAYLOAD = "eyJzYWx0IjpbMzUsMTY3LDQwLDEzOSw1NiwxMjksMTEyLDEwLDE3NCwxNjksMTU1LDkxLDEyMSwyMzgsMzksMjAzXSwiaXYiOls5NywxMTgsNCwyMzAsMjMzLDIyNiwzMSw0NCwyMDUsMjE0LDE1MywxMTBdLCJkYXRhIjpbMTU3LDcwLDIyMywyMiwxLDE0MiwwLDI0OCwyMDcsMTAxLDE3NSwxNDYsMTcxLDE1MywyMDUsNiwxNjUsMjQ0LDI0MywxMzcsMjMsMjIyLDIxNSwxNiw4MiwxODMsMTk2LDE2LDEzOSw0NCwyMDIsMTU0LDksOTMsMTc5LDExMyw2OCw1NCwxNywyMDMsMTg5LDE4OSw1NiwyMjcsMTEyLDE1Niw0OSwxMTgsMTU1LDE5MSwyMjMsMTYxLDEwNiwxMTgsMTY5LDIyOCwxNTMsODgsMTczLDEyMCw5NiwyNiwxNzcsNDEsMTUwLDI0MCw5NywxNzgsMjI1LDYwLDU0LDIxOSwxNzksOTAsNjEsMTExLDMzLDE3LDEwMSwxNzksMTQwLDEzNSwyMDAsMTQxLDIyMywxNjcsMTgxLDEwNCwyMzUsMTU3LDMzLDEsOTIsMTM3LDI1LDI1LDE5OSwxNDEsMjExLDE2NSwyMywxNiwxNjgsMTI2LDIxMCw1NywxNjgsNywxMDUsNDEsNDgsNTgsMzYsMTI1LDI0OCwxMzgsMTcxLDIzNiw5LDM0LDIxOSwxNzYsODgsMTUwLDI1MCwzNSwyMjIsMTUxLDg0LDE0OCwyMTksMTkzLDIsODQsMjQ0LDQ3LDk5XX0=";
 
-        const STELLARIUM_PANEL_URL = 'https://stellarium-web.org/?lat=52.977972&lng=20.168588';
-        let stellariumPanelWindow = null;
         let DECRYPTED_WEBHOOK = null;
         let statusTimer;
         let currentAnnTimeMode = 'duration';
@@ -1659,23 +1657,7 @@
         }
 
         function openStellariumPanel() {
-            if (stellariumPanelWindow && !stellariumPanelWindow.closed) {
-                stellariumPanelWindow.focus();
-                return;
-            }
-
-            stellariumPanelWindow = window.open(
-                STELLARIUM_PANEL_URL,
-                'astroltarz-stellarium',
-                'popup,width=1440,height=900'
-            );
-            if (!stellariumPanelWindow) {
-                showStatus('⚠️ PRZEGLĄDARKA ZABLOKOWAŁA OKNO STELLARIUM');
-                return;
-            }
-
-            stellariumPanelWindow.focus();
-            showStatus('🌌 OTWARTO STELLARIUM — NIEBO NAD WRÓBLEWEM');
+            sendCmd('!stellarium', '🔭 ŻĄDANIE URUCHOMIENIA WYSŁANE DO ASTROŁTARZA');
         }
 
         function toggleAstronautyka(visible) {
