@@ -1326,6 +1326,10 @@
                     <span class="icon">🔄</span>
                     <span>PRZEŁADUJ KOD</span>
                 </button>
+                <button class="btn" onclick="restartAstroltarzFull()">
+                    <span class="icon">⟳</span>
+                    <span>PEŁNY RESTART APLIKACJI</span>
+                </button>
                 
                 <div class="power-box-pc">
                     <button class="btn btn-danger btn-full" onclick="shutdownSystem()">
@@ -1340,8 +1344,12 @@
                 <button class="modal-close" onclick="toggleSettings(false)" aria-label="Zamknij ustawienia">×</button>
                 <div id="settings-modal-title" class="section-title">Ustawienia Systemu</div>
                 <div class="input-group">
-                    <label for="setting-kb-scale">POWIĘKSZENIE KOŃCOWE KEN BURNS (%)</label>
-                    <input type="number" id="setting-kb-scale" value="3" min="0" max="20" step="1" class="input-text">
+                    <label for="setting-kb-scale">POWIĘKSZENIE KEN BURNS W TRYBIE FOTO (%)</label>
+                    <input type="number" id="setting-kb-scale" value="10" min="0" max="20" step="1" class="input-text">
+                </div>
+                <div class="input-group">
+                    <label for="setting-gazette-kb-scale">POWIĘKSZENIE KEN BURNS W GAZETCE (%)</label>
+                    <input type="number" id="setting-gazette-kb-scale" value="3" min="0" max="20" step="1" class="input-text">
                 </div>
                 <div class="input-group">
                     <label for="setting-mode-duration">CZAS WYŚWIETLANIA TRYBU (SEKUNDY)</label>
@@ -1899,6 +1907,7 @@
         const changedSettings = new Set();
         const settingFields = {
             'setting-kb-scale': 'ken_burns_scale',
+            'setting-gazette-kb-scale': 'gazette_ken_burns_scale',
             'setting-mode-duration': 'mode_duration',
             'setting-gazette-photo-duration': 'gazette_photo_duration',
             'setting-intro-enabled': 'intro_enabled',
@@ -1921,6 +1930,7 @@
         function sendSettings() {
             const values = {
                 ken_burns_scale: document.getElementById('setting-kb-scale').value,
+                gazette_ken_burns_scale: document.getElementById('setting-gazette-kb-scale').value,
                 mode_duration: document.getElementById('setting-mode-duration').value,
                 gazette_photo_duration: document.getElementById('setting-gazette-photo-duration').value,
                 intro_enabled: document.getElementById('setting-intro-enabled').checked ? 'on' : 'off',
@@ -1948,6 +1958,13 @@
             if (!DECRYPTED_WEBHOOK) return;
             if (confirm("PRZEŁADOWAĆ KOD INTERFEJSU ASTROŁTARZA?\n\nAplikacja i Arduino pozostaną uruchomione.")) {
                 sendCmd('!przeladuj', '🔄 PRZEŁADOWYWANIE KODU...');
+            }
+        }
+
+        function restartAstroltarzFull() {
+            if (!DECRYPTED_WEBHOOK) return;
+            if (confirm("WYKONAĆ PEŁNY RESTART ASTROŁTARZA?\n\nAplikacja, bot Discord i połączenie z Arduino zostaną zamknięte, po czym aplikacja uruchomi się ponownie.")) {
+                sendCmd('!restart', '🔄 PEŁNY RESTART ASTROŁTARZA...');
             }
         }
 
