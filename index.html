@@ -256,16 +256,19 @@
             background: var(--hud-surface-active);
         }
 
-        .meteorite-picker {
+        .meteorite-picker,
+        .guided-tour-picker {
             position: relative;
             min-width: 0;
         }
 
-        .meteorite-picker > .btn {
+        .meteorite-picker > .btn,
+        .guided-tour-picker > .btn {
             width: 100%;
         }
 
-        .meteorite-options {
+        .meteorite-options,
+        .guided-tour-options {
             display: none;
             position: absolute;
             z-index: 20;
@@ -280,11 +283,13 @@
             box-shadow: 0 0 18px rgba(0, 229, 255, 0.25);
         }
 
-        .meteorite-options.visible {
+        .meteorite-options.visible,
+        .guided-tour-options.visible {
             display: grid;
         }
 
-        .meteorite-option {
+        .meteorite-option,
+        .guided-tour-option {
             width: 100%;
             padding: 9px 6px;
             border: 1px solid rgba(0, 229, 255, 0.35);
@@ -295,12 +300,14 @@
             cursor: pointer;
         }
 
-        .meteorite-option:active {
+        .meteorite-option:active,
+        .guided-tour-option:active {
             background: var(--neon-cyan);
             color: #060913;
         }
 
-        .meteorite-option:disabled {
+        .meteorite-option:disabled,
+        .guided-tour-option:disabled {
             cursor: not-allowed;
             color: var(--text-muted);
             border-color: rgba(129, 151, 176, 0.2);
@@ -512,6 +519,7 @@
             }
 
             .meteorite-picker,
+            .guided-tour-picker,
             .power-box-pc {
                 min-width: 0;
             }
@@ -1117,7 +1125,8 @@
 
         @media (min-width: 960px) {
             .quick-modes-grid > .btn,
-            .quick-modes-grid > .meteorite-picker > .btn {
+            .quick-modes-grid > .meteorite-picker > .btn,
+            .quick-modes-grid > .guided-tour-picker > .btn {
                 width: 140px;
                 min-width: 0;
             }
@@ -1311,10 +1320,20 @@
                     <span class="icon">🪨</span>
                     <span>SEKWENCJA METEORYTÓW</span>
                 </button>
-                <button class="btn btn-tour" onclick="sendCmd('!tryb zwiedzanie', '🪐 URUCHOMIONO ŚCIEŻKĘ ZWIEDZANIA')">
-                    <span class="icon">🪐</span>
-                    <span>ŚCIEŻKA ZWIEDZANIA</span>
-                </button>
+                <div class="guided-tour-picker">
+                    <button class="btn btn-tour" type="button" onclick="toggleGuidedTourPicker()" aria-expanded="false" aria-controls="guided-tour-options">
+                        <span class="icon">🪐</span>
+                        <span>ŚCIEŻKA ZWIEDZANIA</span>
+                    </button>
+                    <div id="guided-tour-options" class="guided-tour-options">
+                        <button class="guided-tour-option" type="button" onclick="startGuidedTour('zadzim')">METEORYT ZADZIM</button>
+                        <button class="guided-tour-option" type="button" onclick="startGuidedTour('nwa_h')">METEORYT NWA x H</button>
+                        <button class="guided-tour-option" type="button" onclick="startGuidedTour('nwa_l')">METEORYT NWA x L</button>
+                        <button class="guided-tour-option" type="button" onclick="startGuidedTour('iss')">WYSTAWA ISS</button>
+                        <button class="guided-tour-option" type="button" onclick="startGuidedTour('hubble')">TELESKOP HUBBLE’A</button>
+                        <button class="guided-tour-option" type="button" onclick="startGuidedTour('apollo11')">MISJA APOLLO 11</button>
+                    </div>
+                </div>
                 <div class="meteorite-picker">
                     <button class="btn" onclick="toggleMeteoritePicker()">
                         <span class="icon">🔎</span>
@@ -1571,7 +1590,7 @@
 
             <div class="help-section">
                 <strong>🪐 Ścieżka zwiedzania</strong>
-                <span>Uruchamia zapętloną, cichą trasę przez dedykowane panele meteorytów oraz wystawy ISS, Hubble’a i Apollo 11. Przycisk „Tryb Foto” przerywa trasę i przywraca zwykłą sekwencję ekranów.</span>
+                <span>Po wybraniu panelu startowego uruchamia zapętloną, cichą trasę przez dedykowane panele meteorytów oraz wystawy ISS, Hubble’a i Apollo 11. Przycisk „Tryb Foto” przerywa trasę i przywraca zwykłą sekwencję ekranów.</span>
             </div>
 
             <div class="help-section">
@@ -1630,7 +1649,7 @@
                 <div>• <span class="cmd-code">!tryb sn34</span> – włącza widok stacji bolidowej SN34</div>
                 <div>• <span class="cmd-code">!tryb niebo</span> – włącza informacje o aktualnym niebie</div>
                 <div>• <span class="cmd-code">!tryb foto</span> – włącza tryb zdjęć</div>
-                <div>• <span class="cmd-code">!tryb zwiedzanie</span> – uruchamia zapętloną ścieżkę zwiedzania</div>
+                <div>• <span class="cmd-code">!tryb zwiedzanie [zadzim|nwa_h|nwa_l|iss|hubble|apollo11]</span> – uruchamia zapętloną ścieżkę od wybranego panelu</div>
                 <div>• <span class="cmd-code">!tryb iss_wystawa</span> – otwiera edukacyjny panel ISS</div>
                 <div>• <span class="cmd-code">!tryb hubble</span> – otwiera panel teleskopu Hubble’a</div>
                 <div>• <span class="cmd-code">!tryb apollo11</span> – otwiera panel misji Apollo 11</div>
@@ -1922,7 +1941,41 @@
 
         function toggleMeteoritePicker() {
             const options = document.getElementById('meteorite-options');
-            if (options) options.classList.toggle('visible');
+            if (options) {
+                const isVisible = options.classList.toggle('visible');
+                if (isVisible) {
+                    document.getElementById('guided-tour-options')?.classList.remove('visible');
+                    document.querySelector('.guided-tour-picker > .btn')?.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        function toggleGuidedTourPicker() {
+            const options = document.getElementById('guided-tour-options');
+            const button = document.querySelector('.guided-tour-picker > .btn');
+            if (!options || !button) return;
+            const isVisible = options.classList.toggle('visible');
+            button.setAttribute('aria-expanded', String(isVisible));
+            if (isVisible) document.getElementById('meteorite-options')?.classList.remove('visible');
+        }
+
+        function startGuidedTour(startPanel) {
+            document.getElementById('guided-tour-options')?.classList.remove('visible');
+            document.querySelector('.guided-tour-picker > .btn')?.setAttribute('aria-expanded', 'false');
+            const panelNames = {
+                zadzim: 'METEORYT ZADZIM',
+                nwa_h: 'METEORYT NWA x H',
+                nwa_l: 'METEORYT NWA x L',
+                iss: 'WYSTAWA ISS',
+                hubble: 'TELESKOP HUBBLE’A',
+                apollo11: 'MISJA APOLLO 11'
+            };
+            const panelName = panelNames[startPanel];
+            if (!panelName) {
+                showStatus('⚠️ NIEZNANY PANEL ŚCIEŻKI ZWIEDZANIA');
+                return;
+            }
+            sendCmd(`!tryb zwiedzanie ${startPanel}`, `🪐 ŚCIEŻKA ZWIEDZANIA: ${panelName}`);
         }
 
         function selectMeteorite(identifier) {
