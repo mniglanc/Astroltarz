@@ -327,8 +327,8 @@
         .btn-stellarium { border-color: rgba(129, 212, 250, 0.65); }
         .btn-stellarium:active { border-color: #81d4fa; box-shadow: 0 0 14px rgba(129, 212, 250, 0.45); }
 
-        .btn-astronautyka { border-color: rgba(0, 255, 170, 0.55); }
-        .btn-astronautyka:active { border-color: #00ffaa; box-shadow: 0 0 14px rgba(0, 255, 170, 0.45); }
+        .btn-astronautyka { border-color: rgba(0, 229, 255, 0.45); }
+        .btn-astronautyka:active { border-color: var(--neon-cyan); box-shadow: 0 0 12px rgba(0, 229, 255, 0.35); }
 
         .btn-tour { border-color: rgba(0, 229, 255, 0.6); }
         .btn-tour:active { border-color: #00e5ff; box-shadow: 0 0 14px rgba(0, 229, 255, 0.45); }
@@ -1292,7 +1292,7 @@
                     <span class="icon">📡</span>
                     <span>TRYB SN34</span>
                 </button>
-                <button class="btn btn-astronautyka" onclick="toggleAstronautyka(true)">
+                <button class="btn btn-astronautyka" onclick="sendCmd('!tryb astronautyka', '🚀 WŁĄCZONO ASTRONAUTYKĘ')">
                     <span class="icon">🚀</span>
                     <span>ASTRONAUTYKA</span>
                 </button>
@@ -1403,29 +1403,6 @@
                 <div class="settings-modal-actions">
                     <button class="action-btn" onclick="sendSettings()">ZAPISZ ZMIANY</button>
                     <button class="action-btn modal-cancel" onclick="toggleSettings(false)">ANULUJ</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="astronautyka-modal" class="overlay-modal" aria-hidden="true">
-            <div class="modal-card settings-form" role="dialog" aria-modal="true" aria-labelledby="astronautyka-modal-title">
-                <button class="modal-close" onclick="toggleAstronautyka(false)" aria-label="Zamknij Astronautykę">×</button>
-                <div id="astronautyka-modal-title" class="section-title">Uruchom Astronautykę</div>
-                <div class="input-group">
-                    <label for="astronautyka-url">LINK DO TRANSMISJI</label>
-                    <input type="url" id="astronautyka-url" class="input-text" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label for="astronautyka-name">NAZWA TRANSMISJI</label>
-                    <input type="text" id="astronautyka-name" class="input-text" maxlength="160" placeholder="np. START ARTEMIS II" autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label for="astronautyka-description">KRÓTKI OPIS TRANSMISJI</label>
-                    <textarea id="astronautyka-description" class="input-text" maxlength="500" placeholder="np. Start rakiety ..."></textarea>
-                </div>
-                <div class="settings-modal-actions">
-                    <button class="action-btn" onclick="sendAstronautyka()">URUCHOM TRANSMISJĘ</button>
-                    <button class="action-btn modal-cancel" onclick="toggleAstronautyka(false)">ANULUJ</button>
                 </div>
             </div>
         </div>
@@ -1595,7 +1572,7 @@
 
             <div class="help-section">
                 <strong>🚀 Astronautyka</strong>
-                <span>Ręcznie uruchamia transmisję wydarzenia astronautycznego. Podaj link i krótki opis; tryb nie jest częścią automatycznej sekwencji.</span>
+                <span>Uruchamia panel ASTRONAUTYKA z najnowszymi wiadomościami NASA i ESA. Lista aktualizuje się automatycznie.</span>
             </div>
 
             <div class="help-section">
@@ -1693,50 +1670,6 @@
 
         function openStellariumPanel() {
             sendCmd('!stellarium', '🔭 ŻĄDANIE URUCHOMIENIA WYSŁANE DO ASTROŁTARZA');
-        }
-
-        function toggleAstronautyka(visible) {
-            const modal = document.getElementById('astronautyka-modal');
-            if (!modal) return;
-            modal.classList.toggle('visible', visible);
-            modal.setAttribute('aria-hidden', String(!visible));
-            if (visible) {
-                const savedUrl = localStorage.getItem('astroltarz_astronautyka_url') || '';
-                const savedName = localStorage.getItem('astroltarz_astronautyka_name') || '';
-                const savedDescription = localStorage.getItem('astroltarz_astronautyka_description') || '';
-                const urlInput = document.getElementById('astronautyka-url');
-                const nameInput = document.getElementById('astronautyka-name');
-                const descriptionInput = document.getElementById('astronautyka-description');
-                if (!urlInput.value) urlInput.value = savedUrl;
-                if (!nameInput.value) nameInput.value = savedName;
-                if (!descriptionInput.value) descriptionInput.value = savedDescription;
-                urlInput.focus();
-            }
-        }
-
-        function sendAstronautyka() {
-            const urlInput = document.getElementById('astronautyka-url');
-            const nameInput = document.getElementById('astronautyka-name');
-            const descriptionInput = document.getElementById('astronautyka-description');
-            const url = urlInput.value.trim();
-            const name = nameInput.value.trim().replace(/\s+/g, ' ');
-            const description = descriptionInput.value.trim().replace(/\s+/g, ' ');
-            try {
-                const parsed = new URL(url);
-                if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname) throw new Error();
-            } catch (error) {
-                showStatus('⚠️ PODAJ POPRAWNY LINK');
-                return;
-            }
-            if (!name || !description) {
-                showStatus('⚠️ UZUPEŁNIJ NAZWĘ I OPIS');
-                return;
-            }
-            localStorage.setItem('astroltarz_astronautyka_url', url);
-            localStorage.setItem('astroltarz_astronautyka_name', name);
-            localStorage.setItem('astroltarz_astronautyka_description', description);
-            sendCmd(`!astronautyka ${url} | ${name} | ${description}`, '🚀 WŁĄCZONO ASTRONAUTYKĘ');
-            toggleAstronautyka(false);
         }
 
         function populateTimeSelectors() {
