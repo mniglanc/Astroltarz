@@ -1384,10 +1384,6 @@
                     <label for="setting-gazette-kb-scale">POWIĘKSZENIE KEN BURNS W GAZETCE (%)</label>
                     <input type="number" id="setting-gazette-kb-scale" value="3" min="0" max="20" step="1" class="input-text">
                 </div>
-                <label class="checkbox-container">
-                    <input type="checkbox" id="setting-gazette-ken-burns-enabled">
-                    <span>ANIMACJA KEN BURNS W GAZETCE</span>
-                </label>
                 <div class="input-group">
                     <label for="setting-mode-duration">CZAS WYŚWIETLANIA TRYBU (SEKUNDY)</label>
                     <input type="number" id="setting-mode-duration" value="60" min="5" max="3600" step="1" class="input-text">
@@ -1545,6 +1541,10 @@
                             </div>
                         </div>
                     </div>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="gazette-ken-burns">
+                        <span>WŁĄCZ ANIMACJĘ KEN BURNS</span>
+                    </label>
                     <div class="gallery-actions-grid">
                         <button class="action-btn btn-gazette" onclick="sendGazette()">WŁĄCZ GAZETKĘ</button>
                         <button class="btn btn-danger btn-full" onclick="sendCmd('!gazettastop', '⏹️ GAZETKA ZATRZYMANA — POWRÓT DO SEKWENCJI')">ZAKOŃCZ I WRÓĆ DO SEKWENCJI</button>
@@ -1611,12 +1611,12 @@
 
             <div class="help-section">
                 <strong>📰 Gazetka</strong>
-                <span>Wyświetla zdjęcia z folderu Gazetka. W ustawieniach możesz włączyć efekt Ken Burns albo wyświetlać statyczne obrazy. W module Gazetki wybierz czas trwania w minutach albo dokładną datę i godzinę zakończenia. Po terminie system sam wróci do automatycznej sekwencji; możesz też zakończyć tryb wcześniej.</span>
+                <span>Wyświetla zdjęcia z folderu Gazetka. Zaznacz checkbox „Włącz animację Ken Burns” w kafelku Gazetki, aby uruchomić zdjęcia z ruchem; domyślnie pozostają statyczne. Wybierz czas trwania albo dokładną datę i godzinę zakończenia.</span>
             </div>
 
             <div class="help-section">
                 <strong>⚙️ Ustawienia</strong>
-                <span>Możesz zmienić skalę Ken Burns dla zdjęć i Gazetki, włączyć lub wyłączyć animację Gazetki, ustawić czasy wyświetlania oraz włączyć intro.</span>
+                <span>Możesz zmienić skalę Ken Burns dla zdjęć i Gazetki, ustawić czasy wyświetlania oraz włączyć intro.</span>
             </div>
 
             <div class="help-section">
@@ -1925,7 +1925,6 @@
         const settingFields = {
             'setting-kb-scale': 'ken_burns_scale',
             'setting-gazette-kb-scale': 'gazette_ken_burns_scale',
-            'setting-gazette-ken-burns-enabled': 'gazette_ken_burns_enabled',
             'setting-mode-duration': 'mode_duration',
             'setting-gazette-photo-duration': 'gazette_photo_duration',
             'setting-intro-enabled': 'intro_enabled',
@@ -1949,7 +1948,6 @@
             const values = {
                 ken_burns_scale: document.getElementById('setting-kb-scale').value,
                 gazette_ken_burns_scale: document.getElementById('setting-gazette-kb-scale').value,
-                gazette_ken_burns_enabled: document.getElementById('setting-gazette-ken-burns-enabled').checked ? 'on' : 'off',
                 mode_duration: document.getElementById('setting-mode-duration').value,
                 gazette_photo_duration: document.getElementById('setting-gazette-photo-duration').value,
                 intro_enabled: document.getElementById('setting-intro-enabled').checked ? 'on' : 'off',
@@ -2061,7 +2059,10 @@
                 timeParam = targetDateTime;
             }
 
-            sendCmd(`!gazetka "${timeParam}"`, "📰 GAZETKA AKTYWNA DO USTAWIONEGO TERMINU");
+            const animationOption = document.getElementById('gazette-ken-burns').checked
+                ? ' --ken-burns'
+                : '';
+            sendCmd(`!gazetka "${timeParam}"${animationOption}`, "📰 GAZETKA AKTYWNA DO USTAWIONEGO TERMINU");
         }
 
         function sendGallery(mode) {
